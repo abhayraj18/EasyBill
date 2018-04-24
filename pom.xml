@@ -112,7 +112,7 @@
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
 		        <configuration>
-		             <mainClass>com.bill.management.config.GenerateDDL</mainClass>
+		             <mainClass>com.easybill.config.db.GenerateDDL</mainClass>
 		             <cleanupDaemonThreads>false</cleanupDaemonThreads>
 		        </configuration>
 	        </plugin>
