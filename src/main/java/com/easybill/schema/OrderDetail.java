@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import com.easybill.schema.metadata.EnumConstant;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,26 +21,24 @@ import lombok.Setter;
 @Setter
 @Entity
 public class OrderDetail {
-	
-	public enum Unit {
-	    PKT, BOX, BAG
-	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@OneToOne
-	@JoinColumn(name = "itemId")
+	@JoinColumn(name = "itemId", nullable = false)
 	private Item item;
-	private int quantity;
-	
+
+	@Column(nullable = false, columnDefinition = "float(5,2)")
+	private Float quantity;
+
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "enum ('PKT', 'BOX', 'BAG')", nullable = false)
-	private Unit unit;
-	
+	@Column(columnDefinition = EnumConstant.UNITS, nullable = false)
+	private EnumConstant.Unit unit;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "orderId")
+	@JoinColumn(name = "orderId", nullable = false)
 	private Order order;
-	
+
 }

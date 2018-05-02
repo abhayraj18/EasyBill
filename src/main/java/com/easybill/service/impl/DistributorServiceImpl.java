@@ -15,8 +15,8 @@ public class DistributorServiceImpl implements DistributorService {
 
 	@Autowired
 	private DistributorRepository distributorRepository;
-	
-	public Distributor saveDistributor(Distributor distributor){
+
+	public Distributor saveDistributor(Distributor distributor) {
 		return distributorRepository.save(distributor);
 	}
 

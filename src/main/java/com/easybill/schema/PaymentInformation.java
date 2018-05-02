@@ -2,8 +2,8 @@ package com.easybill.schema;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,11 +27,17 @@ public class PaymentInformation {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date paymentDate;
 
-	private int amount;
+	@Column(nullable = false, columnDefinition = "float(7,2)")
+	private Float amount;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "customerId")
-	private Customer customer;
-	
+	private String description;
+
 	private boolean approved;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date approvalDate;
+
+	@ManyToOne
+	@JoinColumn(name = "billId")
+	private BillInformation billInformation;
 }

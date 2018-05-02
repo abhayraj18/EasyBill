@@ -25,43 +25,34 @@ public class PhysicalNamingStrategyStandardImpl implements PhysicalNamingStrateg
 
 	@Override
 	public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment jdbcEnvironment) {
-		final List<String> parts = splitAndReplace( name.getText() );
-		return jdbcEnvironment.getIdentifierHelper().toIdentifier(
-				join( parts ),
-				name.isQuoted()
-		);
+		final List<String> parts = splitAndReplace(name.getText());
+		return jdbcEnvironment.getIdentifierHelper().toIdentifier(join(parts), name.isQuoted());
 	}
 
 	@Override
 	public Identifier toPhysicalSequenceName(Identifier name, JdbcEnvironment jdbcEnvironment) {
-		final LinkedList<String> parts = splitAndReplace( name.getText() );
+		final LinkedList<String> parts = splitAndReplace(name.getText());
 		// Acme Corp says all sequences should end with _seq
-		if ( !"seq".equalsIgnoreCase( parts.getLast() ) ) {
-			parts.add( "seq" );
+		if (!"seq".equalsIgnoreCase(parts.getLast())) {
+			parts.add("seq");
 		}
-		return jdbcEnvironment.getIdentifierHelper().toIdentifier(
-				join( parts ),
-				name.isQuoted()
-		);
+		return jdbcEnvironment.getIdentifierHelper().toIdentifier(join(parts), name.isQuoted());
 	}
 
 	@Override
 	public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment jdbcEnvironment) {
-		final List<String> parts = splitAndReplace( name.getText() );
-		return jdbcEnvironment.getIdentifierHelper().toIdentifier(
-				join( parts ),
-				name.isQuoted()
-		);
+		final List<String> parts = splitAndReplace(name.getText());
+		return jdbcEnvironment.getIdentifierHelper().toIdentifier(join(parts), name.isQuoted());
 	}
-	
+
 	private LinkedList<String> splitAndReplace(String name) {
 		LinkedList<String> result = new LinkedList<>();
-		for ( String part : StringUtils.splitByCharacterTypeCamelCase( name ) ) {
-			if ( part == null || part.trim().isEmpty() ) {
+		for (String part : StringUtils.splitByCharacterTypeCamelCase(name)) {
+			if (part == null || part.trim().isEmpty()) {
 				// skip null and space
 				continue;
 			}
-			result.add( part.toLowerCase( Locale.ROOT ) );
+			result.add(part.toLowerCase(Locale.ROOT));
 		}
 		return result;
 	}
@@ -70,9 +61,9 @@ public class PhysicalNamingStrategyStandardImpl implements PhysicalNamingStrateg
 		boolean firstPass = true;
 		String separator = "";
 		StringBuilder joined = new StringBuilder();
-		for ( String part : parts ) {
-			joined.append( separator ).append( part );
-			if ( firstPass ) {
+		for (String part : parts) {
+			joined.append(separator).append(part);
+			if (firstPass) {
 				firstPass = false;
 				separator = "_";
 			}

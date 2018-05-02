@@ -1,13 +1,18 @@
 package com.easybill.schema;
 
-import java.util.List;
+import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.easybill.schema.metadata.EnumConstant;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,11 +25,21 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	@Column(nullable = false, length = 100)
 	private String name;
+
 	private String address;
+
+	@Column(nullable = false, length = 15)
 	private String phoneNumber;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "customer")
-	private List<BillInformation> billInformations;
-	
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = EnumConstant.STATUS, nullable = false)
+	private EnumConstant.Status status;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
+	private Date createdOn;
+
 }

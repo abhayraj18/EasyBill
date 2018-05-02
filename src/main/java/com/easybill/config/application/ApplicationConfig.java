@@ -1,10 +1,8 @@
-package com.easybill;
+package com.easybill.config.application;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -13,21 +11,15 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import com.easybill.config.application.CustomMessageCodesResolver;
-
-@SpringBootApplication
-public class Application {
-
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+public class ApplicationConfig implements WebMvcConfigurer {
 
 	@Bean
 	public MessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:messages");
+		messageSource.setBasename("classpath:validation");
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 	}
@@ -48,10 +40,10 @@ public class Application {
 				.getWebBindingInitializer();
 
 		bindingInitializer.setMessageCodesResolver(new CustomMessageCodesResolver());
-		// bindingInitializer.setConversionService(new
-		// DefaultConversionService());
+		bindingInitializer.setConversionService(conversionService());
 	}
 
+	@Bean
 	public ConversionService conversionService() {
 		FormattingConversionService conversionService = new DefaultFormattingConversionService();
 		// conversionService.addConverter(new StringHttpMessageConverter());
