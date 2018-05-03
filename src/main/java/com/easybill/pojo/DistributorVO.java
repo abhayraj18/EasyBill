@@ -1,52 +1,32 @@
 package com.easybill.pojo;
 
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
+import org.springframework.validation.Errors;
+
+import com.easybill.validation.Patterns;
 import com.easybill.validation.Validatable;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class DistributorVO implements Validatable {
 
 	private Integer id;
+	@NotNull(message = "{name.empty}")
+	@Size(min = 5, max = 10, message = "Length should be minimum {min} characters and maximum {max} characters")
+	@Pattern(regexp = Patterns.NAME_PATTERN, message = "Name should only contain alphabets")
 	private String name;
 	private String address;
+	@NotNull(message = "{phoneNumber.empty}")
 	private String phoneNumber;
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
 
 	@Override
 	public void validate(Errors errors) {
-		ValidationUtils.rejectIfEmpty(errors, "name", "name.empty", "Name cannot be empty");
 	}
 
 }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResponseUtil {
 
-	public static String convertPOJOToString(Object object) {
+	public static String convertToJSONString(Object object) {
 		String result = StringUtils.EMPTY;
 		try {
 			result = new ObjectMapper().writeValueAsString(object);
@@ -19,12 +19,12 @@ public class ResponseUtil {
 		return result;
 	}
 
-	public static Response getResponse(String response, int statusCode) {
-		return new Response(response, statusCode);
+	public static Response buildSuccessResponseEntity(Object response, int statusCode) {
+		return new Response(convertToJSONString(response), statusCode);
 	}
 
-	public static ResponseEntity<Object> buildResponseEntity(Object response, HttpStatus status) {
-		return new ResponseEntity<Object>(response, status);
+	public static ResponseEntity<String> buildErrorResponseEntity(String message, int statusCode) {
+		return new ResponseEntity<String>(message, HttpStatus.valueOf(statusCode));
 	}
 
 }
