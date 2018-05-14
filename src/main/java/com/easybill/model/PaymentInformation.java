@@ -1,4 +1,4 @@
-package com.easybill.schema;
+package com.easybill.model;
 
 import java.util.Date;
 

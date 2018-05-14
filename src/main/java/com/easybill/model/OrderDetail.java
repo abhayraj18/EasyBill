@@ -1,4 +1,4 @@
-package com.easybill.schema;
+package com.easybill.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-import com.easybill.schema.metadata.EnumConstant;
+import com.easybill.model.metadata.EnumConstant;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +38,7 @@ public class OrderDetail {
 	private EnumConstant.Unit unit;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "orderId", nullable = false)
-	private Order order;
+	@JoinColumn(name = "orderInfoId", nullable = false)
+	private OrderInfo orderInfo;
 
 }

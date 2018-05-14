@@ -6,16 +6,17 @@ import org.springframework.http.HttpStatus;
 public class Constants {
 
 	public enum StatusCode {
-		SUCCESS(HttpStatus.OK.value()), FAIL(HttpStatus.BAD_REQUEST.value()), NOT_FOUND(HttpStatus.NOT_FOUND.value());
+		SUCCESS(HttpStatus.OK), FAIL(HttpStatus.BAD_REQUEST), NOT_FOUND(HttpStatus.NOT_FOUND),
+		UNAUTHORIZED(HttpStatus.UNAUTHORIZED);
 
-		private int statusCode;
+		private HttpStatus status;
 
-		private StatusCode(int statusCode) {
-			this.statusCode = statusCode;
+		private StatusCode(HttpStatus status) {
+			this.status = status;
 		}
 
-		public int getStatusCode() {
-			return statusCode;
+		public HttpStatus getStatus() {
+			return status;
 		}
 
 	}
@@ -24,6 +25,8 @@ public class Constants {
 	public static final String SPACE = StringUtils.SPACE;
 	public static final String SEMICOLON = ";";
 	public static final String COLON = ":";
-	public static final String GENERIC_EXCEPTION_MESSAGE = "Something went wrong, please try after some time.";
+	public static final String UNDERSCORE = "_";
 
+	public static final String ROLE_DISTRIBUTOR = "ROLE_DISTRIBUTOR";
+	public static final String ROLE_WHOLESALER = "ROLE_WHOLESALER";
 }

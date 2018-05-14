@@ -1,4 +1,4 @@
-package com.easybill.schema;
+package com.easybill.model;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.easybill.schema.metadata.EnumConstant;
+import com.easybill.model.metadata.EnumConstant;
 
 import lombok.Getter;
 import lombok.Setter;

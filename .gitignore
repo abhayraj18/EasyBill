@@ -26,3 +26,4 @@ nbdist/
 /bin/
 
 logs/*.*
+logs/spring-boot-logging.log

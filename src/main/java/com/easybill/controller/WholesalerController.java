@@ -16,17 +16,17 @@ import com.easybill.util.Constants;
 import com.easybill.util.ResponseUtil;
 
 @RestController
-@RequestMapping(value = "/distributor")
-@Secured(Constants.ROLE_DISTRIBUTOR)
-public class DistributorController {
+@RequestMapping(value = "/wholesaler")
+@Secured(Constants.ROLE_WHOLESALER)
+public class WholesalerController {
 
 	@Autowired
 	private UserService userService;
 
-	@GetMapping("/get/{distributorId}")
-	public ResponseEntity<String> getDistributor(@PathVariable("distributorId") Integer distributorId)
+	@GetMapping("/get/{wholesalerId}")
+	public ResponseEntity<String> getWholesaler(@PathVariable("wholesalerId") Integer wholesalerId)
 			throws EntityNotFoundException {
-		UserVO userVO = userService.getUserById(distributorId);
+		UserVO userVO = userService.getUserById(wholesalerId);
 		return ResponseUtil.buildSuccessResponseEntity(CommonUtil.convertToJSONString(userVO));
 	}
 

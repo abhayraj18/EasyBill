@@ -1,9 +1,17 @@
-package com.easybill.schema.metadata;
+package com.easybill.model.metadata;
 
 public class EnumConstant {
 	public static final String UNITS = "enum ('PC', 'BOX', 'BAG')";
 	public static final String STATUS = "enum ('ACTIVE', 'INACTIVE')";
 	public static final String STATUS_DEFAULT = "ACTIVE";
+
+	public enum RoleName {
+		ROLE_DISTRIBUTOR, ROLE_WHOLESALER, ROLE_VISITOR
+	}
+
+	public enum UserType {
+		DISTRIBUTOR, WHOLESALER
+	}
 
 	public enum Status {
 		ACTIVE, INACTIVE

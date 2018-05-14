@@ -9,6 +9,8 @@ import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
+import com.easybill.util.Constants;
+
 public class PhysicalNamingStrategyStandardImpl implements PhysicalNamingStrategy {
 
 	@Override
@@ -59,13 +61,16 @@ public class PhysicalNamingStrategyStandardImpl implements PhysicalNamingStrateg
 
 	private String join(List<String> parts) {
 		boolean firstPass = true;
-		String separator = "";
+		String separator = Constants.EMPTY_STRING;
 		StringBuilder joined = new StringBuilder();
 		for (String part : parts) {
-			joined.append(separator).append(part);
+			if (part.equals(Constants.UNDERSCORE))
+				continue;
+			joined.append(separator);
+			joined.append(part);
 			if (firstPass) {
 				firstPass = false;
-				separator = "_";
+				separator = Constants.UNDERSCORE;
 			}
 		}
 		return joined.toString().toUpperCase();

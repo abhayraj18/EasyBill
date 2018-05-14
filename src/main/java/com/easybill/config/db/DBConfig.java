@@ -25,31 +25,31 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "com.easybill.repository")
 @PropertySource(value = { "classpath:application.properties" })
 public class DBConfig {
-	
-	private final String PACKAGES_TO_SCAN = "com.easybill.schema";
+
+	private final String PACKAGES_TO_SCAN = "com.easybill.model";
 	private final String NAMING_STRATEGY = "com.easybill.config.db.PhysicalNamingStrategyStandardImpl";
-	
+
 	@Value("${init-db:false}")
 	private String initDatabase;
-	
-	@Value("${datasource.show-sql:false}")
+
+	@Value("${spring.jpa.show-sql:false}")
 	private String showSQL;
-	
-	@Value("${datasource.driver-class-name}")
+
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverClass;
-	
+
 	@Value("${spring.jpa.properties.hibernate.dialect}")
 	private String DIALECT;
-	
+
 	@Value("${spring.datasource.url}")
 	private String url;
-	
+
 	@Value("${spring.datasource.username}")
 	private String username;
-	
+
 	@Value("${spring.datasource.password}")
 	private String password;
-	
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
@@ -65,7 +65,7 @@ public class DBConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-		//vendorAdapter.setDatabasePlatform(DIALECT);
+		// vendorAdapter.setDatabasePlatform(DIALECT);
 		vendorAdapter.setShowSql(Boolean.parseBoolean(showSQL));
 		factory.setDataSource(dataSource());
 		factory.setJpaVendorAdapter(vendorAdapter);
@@ -75,15 +75,15 @@ public class DBConfig {
 		factory.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
 		return factory;
 	}
-	
+
 	private Properties getJPAProperties() {
 		Properties properties = new Properties();
 		properties.put("hibernate.physical_naming_strategy", NAMING_STRATEGY);
 		properties.put("hibernate.dialect", DIALECT);
-		//properties.put("hibernate.format_sql", true);
+		// properties.put("hibernate.format_sql", true);
 		return properties;
 	}
-	
+
 	@Bean
 	public HibernateExceptionTranslator hibernateExceptionTranslator() {
 		return new HibernateExceptionTranslator();

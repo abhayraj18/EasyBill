@@ -1,4 +1,4 @@
-package com.easybill.schema;
+package com.easybill.model;
 
 import java.util.Date;
 
@@ -39,10 +39,10 @@ public class BillInformation {
 	private Float pendingAmount;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "orderId", nullable = false)
-	private Order order;
+	@JoinColumn(name = "orderInfoId", nullable = false)
+	private OrderInfo orderInfo;
 
 	@Column(nullable = false)
-	Integer customerId;
+	Integer userId;
 
 }
