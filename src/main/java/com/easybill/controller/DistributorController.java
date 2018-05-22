@@ -2,17 +2,21 @@ package com.easybill.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.easybill.config.security.CurrentUser;
+import com.easybill.config.security.UserPrincipal;
 import com.easybill.exception.EntityNotFoundException;
 import com.easybill.pojo.UserVO;
 import com.easybill.service.UserService;
 import com.easybill.util.CommonUtil;
 import com.easybill.util.Constants;
+import com.easybill.util.ExceptionMessage;
 import com.easybill.util.ResponseUtil;
 
 @RestController
@@ -24,9 +28,14 @@ public class DistributorController {
 	private UserService userService;
 
 	@GetMapping("/get/{distributorId}")
-	public ResponseEntity<String> getDistributor(@PathVariable("distributorId") Integer distributorId)
-			throws EntityNotFoundException {
-		UserVO userVO = userService.getUserById(distributorId);
+	public ResponseEntity<String> getDistributor(@CurrentUser UserPrincipal currentUser,
+			@PathVariable("distributorId") Integer distributorId) throws EntityNotFoundException {
+		// Check if authenticated user id matches with passed id
+		if (currentUser.getId() != distributorId) {
+			throw new AccessDeniedException(ExceptionMessage.ACCESS_DENIED_MESSAGE);
+		}
+		
+		UserVO userVO = userService.getUserDetailsById(distributorId);
 		return ResponseUtil.buildSuccessResponseEntity(CommonUtil.convertToJSONString(userVO));
 	}
 

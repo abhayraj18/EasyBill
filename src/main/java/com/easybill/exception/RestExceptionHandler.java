@@ -15,6 +15,13 @@ import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ExceptionMessage;
 import com.easybill.util.ResponseUtil;
 
+/**
+ * Global exception handler class which can handle various types of exceptions and send appropriate
+ * error response.
+ * 
+ * @author abhay.jain
+ *
+ */
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -43,6 +50,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<String> handleAccessDeniedException(HttpServletRequest request, Exception ex) {
 		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.UNAUTHORIZED.getStatus());
+	}
+	
+	@ExceptionHandler(RecentPasswordException.class)
+	public ResponseEntity<String> handleRecentPasswordException(HttpServletRequest request, Exception ex) {
+		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
 	}
 
 	@ExceptionHandler(Exception.class)

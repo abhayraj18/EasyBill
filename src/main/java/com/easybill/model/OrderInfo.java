@@ -44,7 +44,7 @@ public class OrderInfo {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
-	private Date modifiedOn;
+	private Date modifiedAt;
 
 	@Column(nullable = false)
 	Integer userId;

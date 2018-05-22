@@ -10,6 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -20,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.security.access.AccessDeniedException;
 
+import com.easybill.pojo.ChangePasswordForm;
 import com.easybill.pojo.LoginRequest;
 import com.easybill.pojo.UserVO;
 import com.google.gson.Gson;
@@ -29,19 +31,19 @@ public class HttpUtil {
 	public static void main(String[] args) throws IOException {
 		String response = Constants.EMPTY_STRING;
 		UserVO userVO = new UserVO();
-		userVO.setName("ahjhjk");
+		userVO.setName("ABCD");
 		userVO.setPhoneNumber("7987987891");
 		userVO.setAddress("KR Puram");
-		userVO.setPassword("Abh@yabcdefghijklmnop001");
-		userVO.setEmail("a@gmail.com");
+		userVO.setPassword("Abcd@001");
+		userVO.setEmail("abcd@gmail.com");
 		userVO.setUserType("WHOLESALER");
 
 		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername("abcdefgh@gmail.com");
-		loginRequest.setPassword("Abh@y001");
+		loginRequest.setUsername("abcd@gmail.com");
+		loginRequest.setPassword("Abcd@001");
 		JSONObject json = null;
 		try {
-			response = doPost("http://localhost:8090/auth/login", new Gson().toJson(loginRequest));
+			response = doPost("http://localhost:8090/auth/login", new Gson().toJson(loginRequest), null);
 			System.out.println(response);
 			json = (JSONObject) JSONValue.parse(response);
 		} catch (IOException e) {
@@ -49,14 +51,17 @@ public class HttpUtil {
 		}
 
 		try {
-			response = doPost("http://localhost:8090/user/add", new Gson().toJson(userVO));
+			response = doPost("http://localhost:8090/user/add", new Gson().toJson(userVO), null);
 			System.out.println(response);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		response = doPut("http://localhost:8090/user/inactivate/13", json.get("accessToken").toString());
+		System.out.println(response);
 
 		try {
-			String url = "http://localhost:8090/distributor/get/1";
+			String url = "http://localhost:8090/user/get/14";
 			List<NameValuePair> params = new LinkedList<NameValuePair>();
 
 			params.add(new BasicNameValuePair("email", "abcd@gmail.com"));
@@ -70,6 +75,46 @@ public class HttpUtil {
 			e.printStackTrace();
 		} catch (AccessDeniedException e) {
 			e.printStackTrace();
+		}
+		
+		ChangePasswordForm changePasswordForm = new ChangePasswordForm();
+		changePasswordForm.setId(1);
+		changePasswordForm.setCurrentPassword("Abcd@001");
+		changePasswordForm.setNewPassword("Abcd@001");
+		
+		try {
+			response = doPost("http://localhost:8090/user/changePassword", new Gson().toJson(changePasswordForm), json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		/*EditUserForm userForm = new EditUserForm();
+		userForm.setId(5);
+		userForm.setName("abcd");
+		userForm.setAddress("abcde");
+		userForm.setPhoneNumber("9879879798");
+		userForm.setEmail("abcdefgh@gmail.com");
+		
+		try {
+			response = doPost("http://localhost:8090/user/edit", new Gson().toJson(userForm), json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+	}
+
+	private static String doPut(String url, String authorizationHeader) {
+		CloseableHttpClient client = getHTTPClient();
+		CloseableHttpResponse response = null;
+		try {
+			HttpPut put = new HttpPut(url);
+			put.addHeader("Authorization", authorizationHeader);
+			response = client.execute(put);
+			return EntityUtils.toString(response.getEntity());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
 	}
 
@@ -91,13 +136,14 @@ public class HttpUtil {
 		}
 	}
 
-	public static String doPost(String url, String data) throws IOException {
+	public static String doPost(String url, String data, String authorizationHeader) throws IOException {
 		CloseableHttpClient client = getHTTPClient();
 		CloseableHttpResponse response = null;
 		try {
 			HttpPost post = new HttpPost(url);
 			HttpEntity entity = new StringEntity(data, ContentType.APPLICATION_JSON);
 			post.setEntity(entity);
+			post.addHeader("Authorization", authorizationHeader);
 			response = client.execute(post);
 			return EntityUtils.toString(response.getEntity(), Charset.defaultCharset());
 		} catch (IOException e) {

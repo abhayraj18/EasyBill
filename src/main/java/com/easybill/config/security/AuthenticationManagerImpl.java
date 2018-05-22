@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.easybill.model.User;
+import com.easybill.model.metadata.EnumConstant.Status;
 import com.easybill.repository.UserRepository;
 
 @Service
@@ -25,9 +26,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		User user = userRepository.findByUsername(authentication.getPrincipal().toString())
+		User user = userRepository.findByUsernameAndStatus(authentication.getPrincipal().toString(), Status.ACTIVE)
 				.orElseThrow(() -> new UsernameNotFoundException(
-						"User not found with username : " + authentication.getPrincipal().toString()));
+						"User could not be found with username: " + authentication.getPrincipal().toString()));
 		if (passwordEncoder.matches(authentication.getCredentials().toString(), user.getPassword())) {
 			UserDetails userDetails = UserPrincipal.create(user);
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

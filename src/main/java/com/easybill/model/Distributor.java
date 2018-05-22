@@ -15,9 +15,8 @@ public class Distributor extends User {
 	protected Distributor() {
 	}
 
-	public Distributor(String name, String username, String email, String password, String address,
-			String phoneNumber) {
-		super(name, username, email, password, address, phoneNumber);
+	public Distributor(String name, String username, String email, String address, String phoneNumber) {
+		super(name, username, email, address, phoneNumber);
 	}
-
+	
 }

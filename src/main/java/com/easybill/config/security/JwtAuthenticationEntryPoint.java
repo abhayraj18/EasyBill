@@ -12,6 +12,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.easybill.util.ExceptionMessage;
+
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -21,7 +23,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			AuthenticationException e) throws IOException, ServletException {
 		logger.error("Responding with unauthorized error. Message - {}", e.getMessage());
-		httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-				"Sorry, You're not authorized to access this resource.");
+		httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.ACCESS_DENIED_MESSAGE);
 	}
 }

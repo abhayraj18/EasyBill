@@ -47,10 +47,10 @@ public class Item {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
-	private Date addedOn;
+	private Date addedAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date modifiedOn;
+	private Date modifiedAt;
 
 	@Column(columnDefinition = "bit(1) default b'0'")
 	private boolean archive;

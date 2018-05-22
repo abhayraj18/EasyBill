@@ -2,6 +2,12 @@ package com.easybill.exception;
 
 import lombok.Getter;
 
+/**
+ * Exception class to indicate that an entity does not exist.
+ * 
+ * @author abhay.jain
+ *
+ */
 @Getter
 public class EntityNotFoundException extends Exception {
 	/**

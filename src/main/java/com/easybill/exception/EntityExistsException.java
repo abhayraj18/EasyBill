@@ -3,6 +3,12 @@ package com.easybill.exception;
 import lombok.Getter;
 
 @Getter
+/**
+ * Exception class to indicate that an entity already exists.
+ * 
+ * @author abhay.jain
+ *
+ */
 public class EntityExistsException extends Exception {
 	/**
 	 * 
