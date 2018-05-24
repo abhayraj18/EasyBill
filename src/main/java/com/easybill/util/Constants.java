@@ -30,4 +30,6 @@ public class Constants {
 	public static final String ROLE_DISTRIBUTOR = "ROLE_DISTRIBUTOR";
 	public static final String ROLE_WHOLESALER = "ROLE_WHOLESALER";
 	public static final String PIPE = "|";
+	
+	public static final String RESET_PASSWORD_URL = "/user/resetPassword";
 }

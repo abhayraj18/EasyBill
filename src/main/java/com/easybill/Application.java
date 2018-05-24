@@ -16,9 +16,9 @@ public class Application {
 	}
 
 	@Bean
-	public MessageSource messageSource() {
+	public MessageSource validationMessageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:messages");
+		messageSource.setBasename("classpath:validation_messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 	}
@@ -26,7 +26,7 @@ public class Application {
 	@Bean
 	public LocalValidatorFactoryBean validator() {
 		LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-		bean.setValidationMessageSource(messageSource());
+		bean.setValidationMessageSource(validationMessageSource());
 		return bean;
 	}
 

@@ -10,8 +10,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-public class MessageUtil {
+public class ValidationUtil {
 
+	/**
+	 * Get error messages for each field in a map from Errors
+	 * 
+	 * @param result
+	 * @return
+	 */
 	public static Map<String, List<String>> getErrorMessages(Errors result) {
 		Map<String, List<String>> errorMap = new HashMap<>();
 		result.getAllErrors().forEach(error -> {
@@ -24,16 +30,29 @@ public class MessageUtil {
 		return errorMap;
 	}
 
+	/**
+	 * Get Global error messages from validation errors.
+	 * 
+	 * @param errorMap
+	 * @param error
+	 */
 	private static void getGlobalErrors(Map<String, List<String>> errorMap, ObjectError error) {
 		List<String> fieldErrors = errorMap.get(error.getCode()) == null ? new ArrayList<>()
 				: errorMap.get(error.getCode());
-		String message = Messages.get(error.getCode()) != null ? Messages.get(error.getCode())
+		String message = ValidationMessage.get(error.getCode()) != null ? ValidationMessage.get(error.getCode())
 				: error.getDefaultMessage();
+		// Format the message using the arguments passed
 		message = MessageFormat.format(message, error.getArguments());
 		fieldErrors.add(message);
 		errorMap.put(error.getCode(), fieldErrors);
 	}
 
+	/**
+	 * Get Field error messages from validation errors.
+	 * 
+	 * @param errorMap
+	 * @param error
+	 */
 	private static void getFieldErrors(Map<String, List<String>> errorMap, ObjectError error) {
 		FieldError fieldError = (FieldError) error;
 		List<String> fieldErrors = errorMap.get(fieldError.getField()) == null ? new ArrayList<>()

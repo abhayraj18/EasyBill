@@ -13,7 +13,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	
 	Optional<User> findByUsernameAndStatus(String username, Status status);
 
-	Optional<User> findByEmail(String email);
+	Optional<User> findByEmailAndStatus(String email, Status status);
 
 	boolean existsByEmailAndStatus(String email, Status status);
 

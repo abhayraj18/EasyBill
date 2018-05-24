@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.easybill.exception.EntityNotFoundException;
 import com.easybill.model.User;
 import com.easybill.model.metadata.EnumConstant.Status;
 import com.easybill.repository.UserRepository;
@@ -27,9 +28,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	@Transactional
-	public UserDetails loadUserById(Integer id) {
+	public UserDetails loadUserById(Integer id) throws EntityNotFoundException {
 		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UsernameNotFoundException("User could not be found with id: " + id));
+				.orElseThrow(() -> new EntityNotFoundException("User could not be found with id: " + id));
 		return UserPrincipal.create(user);
 	}
 

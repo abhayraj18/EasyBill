@@ -1,8 +1,13 @@
 package com.easybill.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +28,20 @@ import com.easybill.config.security.UserPrincipal;
 import com.easybill.exception.EntityNotFoundException;
 import com.easybill.exception.ValidationException;
 import com.easybill.model.User;
-import com.easybill.pojo.EditUserForm;
 import com.easybill.pojo.ChangePasswordForm;
+import com.easybill.pojo.EditUserForm;
 import com.easybill.pojo.UserVO;
 import com.easybill.service.UserService;
 import com.easybill.util.CommonUtil;
 import com.easybill.util.Constants;
+import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ExceptionMessage;
-import com.easybill.util.MessageUtil;
 import com.easybill.util.ResponseUtil;
+import com.easybill.util.ValidationUtil;
+import com.easybill.util.email.Email;
+import com.easybill.util.email.Email.EmailType;
+import com.easybill.util.email.EmailUtil;
+import com.easybill.util.otp.OTPGenerator;
 import com.easybill.validation.PojoValidator;
 
 @RestController
@@ -43,6 +53,12 @@ public class UserController {
 
 	@Autowired
 	private PojoValidator validator;
+	
+	@Autowired
+	private EmailUtil emailUtil;
+	
+	@Autowired
+	private OTPGenerator otpGenerator;
 
 	@GetMapping(value = "/isUsernameAvailable", params = "username")
 	public ResponseEntity<String> isUsernameAvailable(String username) throws Exception {
@@ -66,7 +82,7 @@ public class UserController {
 		// Do custom validations
 		validator.validate(userVO, result);
 		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = MessageUtil.getErrorMessages(result);
+			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
 			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
 		}
 
@@ -81,7 +97,7 @@ public class UserController {
 	public ResponseEntity<String> editUser(@CurrentUser UserPrincipal currentUser, 
 			@RequestBody @Validated EditUserForm userForm, Errors result) throws Exception {
 		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = MessageUtil.getErrorMessages(result);
+			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
 			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
 		}
 		
@@ -111,16 +127,37 @@ public class UserController {
 	public ResponseEntity<String> changePassword(@CurrentUser UserPrincipal currentUser, 
 			@RequestBody @Validated ChangePasswordForm changePasswordForm, Errors result) throws Exception {
 		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = MessageUtil.getErrorMessages(result);
+			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
 			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
 		}
 		
 		if (currentUser.getId() != changePasswordForm.getId()) {
 			throw new AccessDeniedException(ExceptionMessage.UNAUTHORIZED_OPERATION_MESSAGE);
-		}
+		}	
 		
 		userService.changePassword(changePasswordForm);
 		return ResponseUtil.buildSuccessResponseEntity("Password changed successfully");
+	}
+	
+	@PostMapping(value = "/sendResetPasswordEmail")
+	public ResponseEntity<String> sendResetPasswordEmail(@RequestBody String email) throws Exception {
+		if (StringUtils.isBlank(email)) {
+			return ResponseUtil.buildErrorResponseEntity("Please send email id", StatusCode.FAIL.getStatus());
+		}
+		JSONObject emailJson = (JSONObject) JSONValue.parse(email);
+		if (Objects.isNull(emailJson)) {
+			return ResponseUtil.buildErrorResponseEntity("Please send email id in proper format", StatusCode.FAIL.getStatus());
+		}
+		
+		String emailId = Objects.nonNull(emailJson.get("emailId")) ? emailJson.get("emailId").toString() : Constants.EMPTY_STRING;
+		User user = userService.findByEmail(emailId);
+		int OTP = otpGenerator.generateOTP(emailId);
+		Map<String, Object> data = new HashMap<>();
+		data.put("OTP", OTP);
+		data.put("name", user.getName());
+		Email mail = new Email(emailId, data, EmailType.RESET_PASSWORD);
+		emailUtil.sendEmail(mail);
+		return ResponseUtil.buildSuccessResponseEntity("Password reset email sent successfully");
 	}
 
 }

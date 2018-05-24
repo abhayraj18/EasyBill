@@ -18,8 +18,9 @@ public interface UserService {
 	 * @return created User
 	 * @throws ValidationException
 	 * @throws EntityExistsException
+	 * @throws EntityNotFoundException 
 	 */
-	User addUser(UserVO userVO) throws ValidationException, EntityExistsException;
+	User addUser(UserVO userVO) throws ValidationException, EntityExistsException, EntityNotFoundException;
 
 	/**
 	 * Service to get user details by id
@@ -77,5 +78,7 @@ public interface UserService {
 	void inactivateUser(Integer userId) throws EntityNotFoundException;
 
 	void changePassword(ChangePasswordForm changePasswordForm) throws EntityNotFoundException, RecentPasswordException;
+
+	Boolean doesUserExistWithEmail(String email) throws EntityNotFoundException;
 
 }

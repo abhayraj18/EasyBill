@@ -67,9 +67,17 @@ public class UserServiceImpl implements UserService {
 		}
 		return Boolean.TRUE;
 	}
+	
+	@Override
+	public Boolean doesUserExistWithEmail(String email) throws EntityNotFoundException {
+		if (!userRepository.existsByEmailAndStatus(email, Status.ACTIVE)) {
+			throw new EntityNotFoundException("User could not be found with email: "+email);
+		}
+		return Boolean.TRUE;
+	}
 
 	@Override
-	public User addUser(UserVO userVO) throws ValidationException, EntityExistsException {
+	public User addUser(UserVO userVO) throws ValidationException, EntityExistsException, EntityNotFoundException {
 		// Check if user name is available
 		isUsernameAvailable(userVO.getEmail());
 		
@@ -94,12 +102,13 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param userVO
 	 * @return
+	 * @throws EntityNotFoundException 
 	 */
-	private User getWholesaler(UserVO userVO) {
+	private User getWholesaler(UserVO userVO) throws EntityNotFoundException {
 		User user = new Wholesaler(userVO.getName(), userVO.getEmail(), userVO.getEmail(),
 				userVO.getAddress(), userVO.getPhoneNumber());
 		Set<Role> roles = new HashSet<>();
-		Role role = roleService.findByName(RoleName.ROLE_WHOLESALER.toString());
+		Role role = roleService.findByName(RoleName.ROLE_WHOLESALER.toString(), userVO.getUserType().toUpperCase());
 		roles.add(role);
 		user.setRoles(roles);
 		return user;
@@ -109,12 +118,13 @@ public class UserServiceImpl implements UserService {
 	 * Get Distributor object
 	 * @param userVO
 	 * @return
+	 * @throws EntityNotFoundException 
 	 */
-	private User getDistributor(UserVO userVO) {
+	private User getDistributor(UserVO userVO) throws EntityNotFoundException {
 		User user = new Distributor(userVO.getName(), userVO.getEmail(), userVO.getEmail(),
 				userVO.getAddress(), userVO.getPhoneNumber());
 		Set<Role> roles = new HashSet<>();
-		Role role = roleService.findByName(RoleName.ROLE_DISTRIBUTOR.toString());
+		Role role = roleService.findByName(RoleName.ROLE_DISTRIBUTOR.toString(), userVO.getUserType().toUpperCase());
 		roles.add(role);
 		user.setRoles(roles);
 		return user;
@@ -135,7 +145,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findByEmail(String email) throws EntityNotFoundException {
-		return userRepository.findByEmail(email)
+		return userRepository.findByEmailAndStatus(email, Status.ACTIVE)
 				.orElseThrow(() -> new EntityNotFoundException("User cound not be found with email: " + email));
 	}
 

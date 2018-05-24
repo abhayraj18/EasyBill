@@ -31,12 +31,12 @@ public class HttpUtil {
 	public static void main(String[] args) throws IOException {
 		String response = Constants.EMPTY_STRING;
 		UserVO userVO = new UserVO();
-		userVO.setName("ABCD");
-		userVO.setPhoneNumber("7987987891");
+		userVO.setName("Abhay");
+		userVO.setPhoneNumber("7987987811");
 		userVO.setAddress("KR Puram");
 		userVO.setPassword("Abcd@001");
-		userVO.setEmail("abcd@gmail.com");
-		userVO.setUserType("WHOLESALER");
+		userVO.setEmail("abcde@gmail.com");
+		userVO.setUserType("DISTRIBUTOR");
 
 		LoginRequest loginRequest = new LoginRequest();
 		loginRequest.setUsername("abcd@gmail.com");
@@ -88,6 +88,12 @@ public class HttpUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		JSONObject j = new JSONObject();
+		j.put("emailId", "abcde@gmail.com");
+		String url = "http://localhost:8090/user/sendResetPasswordEmail";
+		response = doPost(url, j.toJSONString(), null);
+		System.out.println(response);
 		
 		/*EditUserForm userForm = new EditUserForm();
 		userForm.setId(5);
