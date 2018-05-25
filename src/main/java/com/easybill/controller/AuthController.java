@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.easybill.config.security.JwtAuthenticationResponse;
 import com.easybill.config.security.JwtTokenProvider;
+import com.easybill.config.security.UserPrincipal;
 import com.easybill.pojo.LoginRequest;
 import com.easybill.util.CommonUtil;
+import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ResponseUtil;
 
 @RestController
@@ -36,6 +38,9 @@ public class AuthController {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+		if (!((UserPrincipal) authentication.getDetails()).isEmailVerified()) {
+			return ResponseUtil.buildErrorResponseEntity("Please verify email to login", StatusCode.FAIL.getStatus());
+		}
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		String jwt = tokenProvider.generateToken(authentication);

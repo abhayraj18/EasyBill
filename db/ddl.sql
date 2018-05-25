@@ -1,11 +1,12 @@
 create table BILL_INFORMATION (ID integer not null auto_increment, AMOUNT float(7,2) not null, BILL_NUMBER varchar(50) not null, BILLING_DATE datetime not null, PENDING_AMOUNT float(7,2), USER_ID integer not null, ORDER_INFO_ID integer not null, primary key (ID)) engine=InnoDB;
 create table DISTRIBUTOR (ID integer not null, primary key (ID)) engine=InnoDB;
+create table EMAIL (ID integer not null auto_increment, CREATED_AT datetime, DATA text, EMAIL_TYPE varchar(255), ERROR varchar(500), SENT bit(1) default b'0', SENT_AT datetime, USER_ID integer not null, primary key (ID)) engine=InnoDB;
 create table ITEM (ID integer not null auto_increment, ADDED_AT datetime not null, ARCHIVE bit(1) default b'0', BASE_UNIT enum ('PC', 'BOX', 'BAG') not null, BASE_UNIT_PRICE float(7,2) not null, LARGE_UNIT enum ('PC', 'BOX', 'BAG') not null, LARGE_UNIT_IN_BASE_UNIT integer, LARGE_UNIT_PRICE float(7,2), MODIFIED_AT datetime, NAME varchar(100) not null, primary key (ID)) engine=InnoDB;
 create table ORDER_DETAIL (ID integer not null auto_increment, QUANTITY float(5,2) not null, UNIT enum ('PC', 'BOX', 'BAG') not null, ITEM_ID integer not null, ORDER_INFO_ID integer not null, primary key (ID)) engine=InnoDB;
 create table ORDER_INFO (ID integer not null auto_increment, DESCRIPTION varchar(255), MODIFIED_AT datetime not null, ORDER_DATE datetime not null, ORDER_NUMBER varchar(50) not null, STATUS enum ('ACTIVE', 'INACTIVE') not null, USER_ID integer not null, primary key (ID)) engine=InnoDB;
-create table PAYMENT_INFORMATION (ID integer not null auto_increment, AMOUNT float(7,2) not null, APPROVAL_DATE datetime, APPROVED bit not null, DESCRIPTION varchar(255), PAYMENT_DATE datetime, BILL_ID integer, primary key (ID)) engine=InnoDB;
+create table PAYMENT_INFORMATION (ID integer not null auto_increment, AMOUNT float(7,2) not null, APPROVAL_DATE datetime, APPROVED bit(1) default b'0', DESCRIPTION varchar(255), PAYMENT_DATE datetime, BILL_ID integer, primary key (ID)) engine=InnoDB;
 create table ROLE (ID integer not null auto_increment, NAME varchar(255) not null, primary key (ID)) engine=InnoDB;
-create table USER (USER_TYPE varchar(31) not null, ID integer not null auto_increment, ADDRESS varchar(255), CREATED_AT datetime not null, EMAIL varchar(50) not null, LAST_MODIFIED_AT datetime, NAME varchar(50) not null, PASSWORD varchar(100) not null, PASSWORD_CHANGED_AT datetime, PHONE_NUMBER varchar(15) not null, STATUS enum ('ACTIVE', 'INACTIVE') not null, STATUS_CHANGED_AT datetime, USERNAME varchar(50) not null, primary key (ID)) engine=InnoDB;
+create table USER (USER_TYPE varchar(31) not null, ID integer not null auto_increment, ADDRESS varchar(255), CREATED_AT datetime not null, EMAIL varchar(50) not null, EMAIL_VERIFICATION_TOKEN varchar(255), EMAIL_VERIFIED bit(1) default b'0', LAST_MODIFIED_AT datetime, NAME varchar(50) not null, PASSWORD varchar(100) not null, PASSWORD_CHANGED_AT datetime, PHONE_NUMBER varchar(15) not null, STATUS enum ('ACTIVE', 'INACTIVE') not null, STATUS_CHANGED_AT datetime, USERNAME varchar(50) not null, primary key (ID)) engine=InnoDB;
 create table USER_ROLE (USER_ID integer not null, ROLE_ID integer not null, primary key (USER_ID, ROLE_ID)) engine=InnoDB;
 create table USER_PASSWORD (ID integer not null auto_increment, CREATED_AT datetime, PASSWORD varchar(100) not null, USER_ID integer not null, primary key (ID)) engine=InnoDB;
 create table WHOLESALER (ID integer not null, primary key (ID)) engine=InnoDB;
@@ -14,6 +15,7 @@ alter table ORDER_INFO add constraint UK_ehip8d2v8bsdvok37bfm5mp7u unique (ORDER
 alter table ROLE add constraint UK_lqaytvswxwacb7s84gcw7tk7l unique (NAME);
 alter table BILL_INFORMATION add constraint FK1dnff799tg0tgp98mltval9g2 foreign key (ORDER_INFO_ID) references ORDER_INFO (ID);
 alter table DISTRIBUTOR add constraint FKq72m7mn77urs0vsuk94pp7hjp foreign key (ID) references USER (ID);
+alter table EMAIL add constraint FKb0hpb7vrclbxndcoqrvmxjeo4 foreign key (USER_ID) references USER (ID);
 alter table ORDER_DETAIL add constraint FKbe30jlhy5kaltqnmxgxs10p2w foreign key (ITEM_ID) references ITEM (ID);
 alter table ORDER_DETAIL add constraint FKf5qo4egpv6d2o5r58weofhr53 foreign key (ORDER_INFO_ID) references ORDER_INFO (ID);
 alter table PAYMENT_INFORMATION add constraint FK6p98i38rg2ljjpd71d8ci3bcb foreign key (BILL_ID) references BILL_INFORMATION (ID);

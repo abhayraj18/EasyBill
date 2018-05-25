@@ -1,12 +1,16 @@
 package com.easybill.service.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import com.easybill.exception.EntityNotFoundException;
 import com.easybill.exception.RecentPasswordException;
 import com.easybill.exception.ValidationException;
 import com.easybill.model.Distributor;
+import com.easybill.model.Email.EmailType;
 import com.easybill.model.Role;
 import com.easybill.model.User;
 import com.easybill.model.UserPassword;
@@ -28,11 +33,14 @@ import com.easybill.pojo.EditUserForm;
 import com.easybill.pojo.UserVO;
 import com.easybill.repository.UserPasswordRepository;
 import com.easybill.repository.UserRepository;
+import com.easybill.service.EmailService;
 import com.easybill.service.RoleService;
 import com.easybill.service.UserService;
 import com.easybill.util.Constants;
 import com.easybill.util.DateUtil;
 import com.easybill.util.ExceptionMessage;
+import com.easybill.util.RestUrlConstants;
+import com.easybill.util.otp.OTPGenerator;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,6 +59,15 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
     private ModelMapper modelMapper;
+	
+	@Autowired
+	private EmailService emailService;
+	
+	@Autowired
+	private OTPGenerator otpGenerator;
+	
+	@Value("${server.url}")
+	private String serverUrl;
 
 	@Override
 	public Boolean isEmailAvailable(String email) throws EntityExistsException {
@@ -77,7 +94,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User addUser(UserVO userVO) throws ValidationException, EntityExistsException, EntityNotFoundException {
+	public User addUser(UserVO userVO) throws EntityExistsException, EntityNotFoundException, ValidationException {
 		// Check if user name is available
 		isUsernameAvailable(userVO.getEmail());
 		
@@ -94,6 +111,7 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setPassword(passwordEncoder.encode(userVO.getPassword()));
 		userRepository.save(user);
+		sendVerificationEmail(user);
 		return user;
 	}
 
@@ -174,6 +192,7 @@ public class UserServiceImpl implements UserService {
 		// If user is editing email, check if its available
 		if (!StringUtils.equalsIgnoreCase(user.getEmail(), userForm.getEmail())) { 
 			isEmailAvailable(userForm.getEmail());
+			sendVerificationEmail(user);
 		}
 		
 		user.setName(userForm.getName());
@@ -210,4 +229,43 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+	@Override
+	public void sendResetPasswordEmail(String emailId) throws EntityNotFoundException {
+		User user = findByEmail(emailId);
+		int OTP = otpGenerator.generateOTP(emailId);
+		Map<String, Object> data = new HashMap<>();
+		data.put("OTP", OTP);
+		data.put("name", user.getName());
+		emailService.createAndSendEmail(user, data, EmailType.RESET_PASSWORD);
+	}
+
+	@Override
+	public void sendVerificationEmail(User user) {
+		String emailVerificationToken = RandomStringUtils.randomAlphanumeric(16);
+		user.setEmailVerificationToken(passwordEncoder.encode(emailVerificationToken));
+		user.setEmailVerified(Boolean.FALSE);
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("id", user.getId());
+		data.put("name", user.getName());
+		data.put("token", emailVerificationToken);
+		
+		String url = serverUrl + RestUrlConstants.VERIFY_EMAIL_URL;
+		data.put("url", url);
+		emailService.createAndSendEmail(user, data, EmailType.VERIFY_EMAIL);
+	}
+
+	@Override
+	public Boolean verifyEmail(String userId, String token) throws NumberFormatException, EntityNotFoundException {
+		User user = getUserById(Integer.parseInt(userId.trim()));
+		
+		if (!passwordEncoder.matches(token, user.getEmailVerificationToken())) {
+			return Boolean.FALSE;
+		}
+		user.setEmailVerified(Boolean.TRUE);
+		user.setEmailVerificationToken(null);
+		userRepository.save(user);
+		return Boolean.TRUE;
+	}
+	
 }

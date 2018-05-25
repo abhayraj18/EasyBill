@@ -26,18 +26,21 @@ public class UserPrincipal implements UserDetails {
 	private String name;
 
 	private String username;
-
+	
 	@JsonIgnore
 	private String password;
+	
+	private boolean emailVerified;
 
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public UserPrincipal(Integer id, String name, String username, String password,
-			Collection<? extends GrantedAuthority> authorities) {
+			boolean emailVerified, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.name = name;
 		this.username = username;
 		this.password = password;
+		this.emailVerified = emailVerified;
 		this.authorities = authorities;
 	}
 
@@ -45,7 +48,7 @@ public class UserPrincipal implements UserDetails {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 
-		return new UserPrincipal(user.getId(), user.getName(), user.getUsername(), user.getPassword(), authorities);
+		return new UserPrincipal(user.getId(), user.getName(), user.getUsername(), user.getPassword(), user.isEmailVerified(), authorities);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ public class PaymentInformation {
 
 	private String description;
 
+	@Column(columnDefinition = "bit(1) default b'0'")
 	private boolean approved;
 
 	@Temporal(TemporalType.TIMESTAMP)

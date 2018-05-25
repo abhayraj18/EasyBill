@@ -52,6 +52,11 @@ public class User {
 
 	@Column(nullable = false, length = 50)
 	private String email;
+	
+	@Column(columnDefinition = "bit(1) default b'0'")
+	private boolean emailVerified;
+	
+	private String emailVerificationToken;
 
 	@Column(nullable = false, length = 100)
 	private String password;

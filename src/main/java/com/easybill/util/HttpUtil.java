@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 
 public class HttpUtil {
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		String response = Constants.EMPTY_STRING;
 		UserVO userVO = new UserVO();
@@ -35,7 +36,7 @@ public class HttpUtil {
 		userVO.setPhoneNumber("7987987811");
 		userVO.setAddress("KR Puram");
 		userVO.setPassword("Abcd@001");
-		userVO.setEmail("abcde@gmail.com");
+		userVO.setEmail("abc@gmail.com");
 		userVO.setUserType("DISTRIBUTOR");
 
 		LoginRequest loginRequest = new LoginRequest();

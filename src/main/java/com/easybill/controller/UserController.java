@@ -1,6 +1,5 @@
 package com.easybill.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,10 +37,6 @@ import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ExceptionMessage;
 import com.easybill.util.ResponseUtil;
 import com.easybill.util.ValidationUtil;
-import com.easybill.util.email.Email;
-import com.easybill.util.email.Email.EmailType;
-import com.easybill.util.email.EmailUtil;
-import com.easybill.util.otp.OTPGenerator;
 import com.easybill.validation.PojoValidator;
 
 @RestController
@@ -54,12 +49,6 @@ public class UserController {
 	@Autowired
 	private PojoValidator validator;
 	
-	@Autowired
-	private EmailUtil emailUtil;
-	
-	@Autowired
-	private OTPGenerator otpGenerator;
-
 	@GetMapping(value = "/isUsernameAvailable", params = "username")
 	public ResponseEntity<String> isUsernameAvailable(String username) throws Exception {
 		return ResponseUtil.buildSuccessResponseEntity(userService.isUsernameAvailable(username).toString());
@@ -109,6 +98,19 @@ public class UserController {
 		return ResponseUtil.buildSuccessResponseEntity("User is edited successfully");
 	}
 	
+	@GetMapping(value = "/verifyEmail", params = {"id", "token"})
+	public ResponseEntity<String> verifyEmail(String id, String token) throws Exception {
+		if (StringUtils.isBlank(id) || StringUtils.isBlank(token)) {
+			return ResponseUtil.buildErrorResponseEntity("Email could not be verified", StatusCode.FAIL.getStatus());
+		}
+		
+		if (userService.verifyEmail(id, token)) {
+			return ResponseUtil.buildSuccessResponseEntity("Email verified successfully");
+		} else {
+			return ResponseUtil.buildErrorResponseEntity("Email could not be verified", StatusCode.FAIL.getStatus());
+		}
+	}
+	
 	@PutMapping(value = "/inactivate/{userId}")
 	@Secured({ Constants.ROLE_DISTRIBUTOR, Constants.ROLE_WHOLESALER })
 	public ResponseEntity<String> inactivateUser(@CurrentUser UserPrincipal currentUser, 
@@ -150,13 +152,7 @@ public class UserController {
 		}
 		
 		String emailId = Objects.nonNull(emailJson.get("emailId")) ? emailJson.get("emailId").toString() : Constants.EMPTY_STRING;
-		User user = userService.findByEmail(emailId);
-		int OTP = otpGenerator.generateOTP(emailId);
-		Map<String, Object> data = new HashMap<>();
-		data.put("OTP", OTP);
-		data.put("name", user.getName());
-		Email mail = new Email(emailId, data, EmailType.RESET_PASSWORD);
-		emailUtil.sendEmail(mail);
+		userService.sendResetPasswordEmail(emailId);
 		return ResponseUtil.buildSuccessResponseEntity("Password reset email sent successfully");
 	}
 

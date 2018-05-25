@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.antMatchers("/auth/**")
 					.permitAll()
-				.antMatchers("/user/isEmailAvailable", "/user/add", "/user/sendResetPasswordEmail")
+				.antMatchers("/user/isEmailAvailable", "/user/add", "/user/sendResetPasswordEmail", "/user/verifyEmail")
                     .permitAll()
 			.anyRequest()
 				.authenticated()

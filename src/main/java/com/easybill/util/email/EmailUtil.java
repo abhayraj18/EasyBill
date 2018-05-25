@@ -1,5 +1,7 @@
 package com.easybill.util.email;
 
+import java.util.Map;
+
 import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
@@ -9,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import com.easybill.model.Email.EmailType;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -24,7 +28,7 @@ public class EmailUtil {
 	@Autowired
     private Configuration freemarkerConfig;
 
-	public boolean sendEmail(Email email) throws Exception {
+	public boolean sendEmail(String recepient, EmailType emailType, Map<String, Object> data) throws Exception {
         try {
 			MimeMessage message = sender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -32,16 +36,16 @@ public class EmailUtil {
 			// set loading location to src/main/resources/emailTemplates
 			freemarkerConfig.setClassForTemplateLoading(this.getClass(), "/emailTemplates");
 			
-			Template template = freemarkerConfig.getTemplate(email.getEmailType().getTemplate());
-			String text = FreeMarkerTemplateUtils.processTemplateIntoString(template, email.getData());
-			helper.setTo(email.getRecipient());
-			helper.setSubject(email.getEmailType().getSubject());
+			Template template = freemarkerConfig.getTemplate(emailType.getTemplate());
+			String text = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
+			helper.setTo(recepient);
+			helper.setSubject(emailType.getSubject());
 			helper.setText(text, true);
 			
 			sender.send(message);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.warn("Could not send email: " + email.getEmailType());
+			logger.warn("Could not send email: " + emailType);
 			throw e;
 		}
 		return Boolean.TRUE;
