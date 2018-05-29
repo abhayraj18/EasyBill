@@ -1,11 +1,16 @@
 package com.easybill.util.otp;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
+import com.easybill.util.DateUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -31,16 +36,18 @@ public class OTPGenerator {
 	}
 
 	/**
-	 * Method for generating OTP and put it in cache.
+	 * Method for generating OTP and putting it in cache.
 	 *
 	 * @param key
-	 * @return cache value (generated OTP number)
+	 * @return Map<Integer, Date> having OTP as key and date till when its valid as value 
 	 */
-	public Integer generateOTP(String key) {
+	public Map<Integer, Date> generateOTP(String key) {
+		Map<Integer, Date> otpMap = new HashMap<>();
 		Random random = new Random();
 		int OTP = 100000 + random.nextInt(900000);
 		otpCache.put(key, OTP);
-		return OTP;
+		otpMap.put(OTP, DateUtils.addMinutes(DateUtil.getCurrentTime(), EXPIRE_MIN));
+		return otpMap;
 	}
 
 	/**

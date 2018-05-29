@@ -57,6 +57,9 @@ public class User {
 	private boolean emailVerified;
 	
 	private String emailVerificationToken;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date emailVerifiedAt;
 
 	@Column(nullable = false, length = 100)
 	private String password;

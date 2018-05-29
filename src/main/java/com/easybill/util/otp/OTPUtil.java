@@ -1,5 +1,8 @@
 package com.easybill.util.otp;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +18,7 @@ public class OTPUtil {
 	 * @param key
 	 * @return generated OTP
 	 */
-	public Integer getOTP(String key) {
+	public Map<Integer, Date> getOTP(String key) {
 		return otpGenerator.generateOTP(key);
 	}
 

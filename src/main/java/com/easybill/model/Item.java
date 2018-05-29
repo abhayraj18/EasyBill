@@ -6,9 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -40,10 +42,10 @@ public class Item {
 	@Column(columnDefinition = EnumConstant.UNITS, nullable = false)
 	private EnumConstant.Unit largeUnit;
 
-	private Integer largeUnitInBaseUnit;
-
-	@Column(columnDefinition = "float(7,2)")
+	@Column(nullable = false, columnDefinition = "float(7,2)")
 	private Float largeUnitPrice;
+	
+	private Integer largeUnitInBaseUnit;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -54,4 +56,12 @@ public class Item {
 
 	@Column(columnDefinition = "bit(1) default b'0'")
 	private boolean archive;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(nullable = false)
+	private User addedBy;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(nullable = false)
+	private User modifiedBy;
 }

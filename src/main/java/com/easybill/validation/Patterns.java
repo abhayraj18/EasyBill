@@ -1,7 +1,7 @@
 package com.easybill.validation;
 
 public class Patterns {
-	public static final String NAME_PATTERN = "[a-zA-Z ]+";
+	public static final String ALPHABETIC_NAME_PATTERN = "[a-zA-Z ]+";
 
 	public static final String EMAIL_PATTERN = "^[A-Za-z]+([._-]{0,1}[A-Za-z0-9]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
@@ -16,4 +16,8 @@ public class Patterns {
 	 * ) 			# End of group
 	 */
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&:_]).{8,50})";
+	
+	public static final String ALPHANUMERIC_NAME_PATTERN = "[a-zA-Z0-9 ]+";
+	
+	public static final String UNIT_PATTERN = "(PC|BOX|BAG)";
 }

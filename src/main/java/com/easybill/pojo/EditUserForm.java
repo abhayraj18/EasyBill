@@ -20,7 +20,7 @@ public class EditUserForm {
 
 	@NotNull(message = "{name.empty}")
 	@Size(min = 2, max = 50, message = "Name should be minimum {min} characters and maximum {max} characters")
-	@Pattern(regexp = Patterns.NAME_PATTERN, message = "Name should only contain alphabets")
+	@Pattern(regexp = Patterns.ALPHABETIC_NAME_PATTERN, message = "Name should only contain alphabets")
 	private String name;
 
 	@NotNull(message = "{email.empty}")

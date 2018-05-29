@@ -1,9 +1,5 @@
 package com.easybill.model;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Map;
 
@@ -20,35 +16,39 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.slf4j.LoggerFactory;
-
+import com.easybill.util.CommonUtil;
 import com.easybill.util.DateUtil;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 public class Email {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(columnDefinition = "text")
+	@Column(columnDefinition = "text", updatable = false)
 	private byte[] data;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, updatable = false)
 	private EmailType emailType;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false, updatable = false)
 	private Date createdAt;
 	
 	@Column(columnDefinition = "bit(1) default b'0'")
 	private boolean sent;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(updatable = false)
 	private Date sentAt;
 	
 	@Column(length = 500)
@@ -60,31 +60,9 @@ public class Email {
 	
 	public Email(User user, Map<String, Object> data, EmailType emailType) {
 		this.user = user;
-		this.data = getDataInBytes(data);
+		this.data = CommonUtil.serialize(data);
 		this.emailType = emailType;
 		setCreatedAt(DateUtil.getCurrentTime());
-	}
-
-	private byte[] getDataInBytes(Map<String, Object> data) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out = null;
-		try {
-			out = new ObjectOutputStream(bos);
-			out.writeObject(data);
-			out.flush();
-			return bos.toByteArray();
-		} catch (IOException e) {
-			LoggerFactory.getLogger(this.getClass()).error("Error while serializing data");
-			e.printStackTrace();
-		} finally {
-			try {
-				bos.close();
-			} catch (IOException ex) {
-				LoggerFactory.getLogger(this.getClass()).error("Error while closing BOS");
-				ex.printStackTrace();
-			}
-		}
-		return new byte[]{};
 	}
 
 	public enum EmailType {
@@ -93,6 +71,7 @@ public class Email {
 		
 		@Getter
 		private String subject;
+		
 		@Getter
 		private String template;
 

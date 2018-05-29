@@ -1,16 +1,16 @@
 package com.easybill.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,11 +36,12 @@ import com.easybill.repository.UserRepository;
 import com.easybill.service.EmailService;
 import com.easybill.service.RoleService;
 import com.easybill.service.UserService;
+import com.easybill.util.CommonUtil;
 import com.easybill.util.Constants;
 import com.easybill.util.DateUtil;
 import com.easybill.util.ExceptionMessage;
 import com.easybill.util.RestUrlConstants;
-import com.easybill.util.otp.OTPGenerator;
+import com.easybill.util.otp.OTPUtil;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -64,11 +65,11 @@ public class UserServiceImpl implements UserService {
 	private EmailService emailService;
 	
 	@Autowired
-	private OTPGenerator otpGenerator;
+	private OTPUtil otpUtil;
 	
-	@Value("${server.url}")
-	private String serverUrl;
-
+	@Autowired
+	private CommonUtil commonUtil;
+	
 	@Override
 	public Boolean isEmailAvailable(String email) throws EntityExistsException {
 		if (userRepository.existsByEmailAndStatus(email, Status.ACTIVE)) {
@@ -232,25 +233,28 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void sendResetPasswordEmail(String emailId) throws EntityNotFoundException {
 		User user = findByEmail(emailId);
-		int OTP = otpGenerator.generateOTP(emailId);
 		Map<String, Object> data = new HashMap<>();
-		data.put("OTP", OTP);
+		Map<Integer, Date> otpMap = otpUtil.getOTP(emailId);
+		Entry<Integer, Date> entry = otpMap.entrySet().iterator().next();
+		data.put("otp", entry.getKey());
+		data.put("validUpto", entry.getValue());
 		data.put("name", user.getName());
 		emailService.createAndSendEmail(user, data, EmailType.RESET_PASSWORD);
 	}
 
 	@Override
 	public void sendVerificationEmail(User user) {
-		String emailVerificationToken = RandomStringUtils.randomAlphanumeric(16);
+		String emailVerificationToken = commonUtil.getRandomAlphaNumericToken();
 		user.setEmailVerificationToken(passwordEncoder.encode(emailVerificationToken));
 		user.setEmailVerified(Boolean.FALSE);
+		user.setEmailVerifiedAt(null);
 		
 		Map<String, Object> data = new HashMap<>();
 		data.put("id", user.getId());
 		data.put("name", user.getName());
 		data.put("token", emailVerificationToken);
 		
-		String url = serverUrl + RestUrlConstants.VERIFY_EMAIL_URL;
+		String url = commonUtil.getServerUrl() + RestUrlConstants.VERIFY_EMAIL_URL;
 		data.put("url", url);
 		emailService.createAndSendEmail(user, data, EmailType.VERIFY_EMAIL);
 	}
@@ -264,6 +268,7 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setEmailVerified(Boolean.TRUE);
 		user.setEmailVerificationToken(null);
+		user.setEmailVerifiedAt(DateUtil.getCurrentTime());
 		userRepository.save(user);
 		return Boolean.TRUE;
 	}
