@@ -1,5 +1,8 @@
 package com.easybill.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.easybill.config.security.JwtAuthenticationResponse;
 import com.easybill.config.security.JwtTokenProvider;
 import com.easybill.config.security.UserPrincipal;
+import com.easybill.exception.ValidationException;
 import com.easybill.pojo.LoginRequest;
 import com.easybill.util.CommonUtil;
 import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ResponseUtil;
+import com.easybill.validation.ValidationUtil;
 
 @RestController
 @RequestMapping(value = "/auth")
@@ -33,8 +39,12 @@ public class AuthController {
 	private JwtTokenProvider tokenProvider;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginRequest loginRequest)
-			throws AuthenticationException {
+	public ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, Errors result)
+			throws AuthenticationException, ValidationException {
+		if (result.hasErrors()) {
+			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
+			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
+		}
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 

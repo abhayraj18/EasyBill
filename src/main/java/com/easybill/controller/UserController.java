@@ -36,8 +36,8 @@ import com.easybill.util.Constants;
 import com.easybill.util.Constants.StatusCode;
 import com.easybill.util.ExceptionMessage;
 import com.easybill.util.ResponseUtil;
-import com.easybill.util.ValidationUtil;
 import com.easybill.validation.PojoValidator;
+import com.easybill.validation.ValidationUtil;
 
 @RestController
 @RequestMapping(value = "/user")

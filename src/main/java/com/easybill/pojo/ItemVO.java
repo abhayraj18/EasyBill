@@ -3,7 +3,7 @@ package com.easybill.pojo;
 import java.util.Objects;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -11,8 +11,10 @@ import javax.validation.constraints.Size;
 import org.springframework.validation.Errors;
 
 import com.easybill.model.metadata.EnumConstant.Unit;
+import com.easybill.util.CommonUtil;
 import com.easybill.validation.Patterns;
 import com.easybill.validation.Validatable;
+import com.easybill.validation.ValidationCode;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,37 +25,35 @@ public class ItemVO implements Validatable {
 
 	private Integer id;
 
-	@NotNull(message = "{name.empty}")
+	@NotNull(message = "{" + ValidationCode.EMPTY_NAME + "}")
 	@Size(min = 2, max = 50, message = "Name should be minimum {min} characters and maximum {max} characters")
-	@Pattern(regexp = Patterns.ALPHANUMERIC_NAME_PATTERN, message = "Name should only contain alphabets and/or numbers")
+	@Pattern(regexp = Patterns.ALPHANUMERIC_NAME_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_NAME + "}")
 	private String name;
 
-	@NotNull(message = "{item.baseUnit.empty}")
-	@NotEmpty(message = "{item.baseUnit.empty}")
-	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "Please select valid base unit")
+	@NotBlank(message = "{" + ValidationCode.EMPTY_ITEM_BASE_UNIT + "}")
+	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_BASE_UNIT + "}")
 	private String baseUnit;
 	
 	private Float baseUnitPrice;
 
-	@NotNull(message = "{item.largeUnit.empty}")
-	@NotEmpty(message = "{item.largeUnit.empty}")
-	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "Please select valid large unit")
+	@NotBlank(message = "{" + ValidationCode.EMPTY_ITEM_LARGE_UNIT + "}")
+	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_LARGE_UNIT + "}")
 	private String largeUnit;
 	
 	private Float largeUnitPrice;
 	
-	@NotNull(message = "{item.largeUnitInBaseUnit.null}")
-	@Min(value = 1, message = "{item.largeUnitInBaseUnit.invalid}")
-	private Integer largeUnitInBaseUnit;
+	@NotNull(message = "{" + ValidationCode.NULL_UNIT_CONVERSION_VALUE + "}")
+	@Min(value = 1, message = "{" + ValidationCode.INVALID_UNIT_CONVERSION_VALUE + "}")
+	private Integer unitConversionValue;
 	
 	@Override
 	public void validate(Errors errors) {
 		if (isBaseUnitLargerThanOrEqualToLargeUnit()) {
-			errors.reject("item.unit.conversion.invalid");
+			errors.reject(ValidationCode.INVALID_UNIT_CONVERSION);
 		}
 		
 		if (isInvalidItemPrice()) {
-			errors.reject("item.unit.price.invalid");
+			errors.reject(ValidationCode.INVALID_UNIT_PRICE);
 		}
 	}
 
@@ -63,7 +63,10 @@ public class ItemVO implements Validatable {
 	}
 
 	private boolean isBaseUnitLargerThanOrEqualToLargeUnit() {
-		return Unit.valueOf(getBaseUnit()).getOrder() >= Unit.valueOf(getLargeUnit()).getOrder();
+		if (CommonUtil.isValidUnit(getBaseUnit()) && CommonUtil.isValidUnit(getLargeUnit())) {
+			return Unit.valueOf(getBaseUnit()).getOrder() >= Unit.valueOf(getLargeUnit()).getOrder();
+		}
+		return false;
 	}
 
 }

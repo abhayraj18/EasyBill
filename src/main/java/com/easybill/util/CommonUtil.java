@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.easybill.validation.Patterns;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -80,6 +83,18 @@ public class CommonUtil {
 	public String getRandomAlphaNumericToken() {
 		return RandomStringUtils.randomAlphanumeric(StringUtils.isNotBlank(getRandomTokenLength())
 				? Integer.parseInt(getRandomTokenLength().trim()) : RANDOM_TOKEN_LENGTH);
+	}
+
+	public static boolean isValidId(Integer id) {
+		return Objects.nonNull(id) && id > 0;
+	}
+	
+	public static boolean isValidUnit(String unit) {
+		Pattern unitPattern = Pattern.compile(Patterns.UNIT_PATTERN);
+		if (!unitPattern.matcher(unit).find()) {
+			return false;
+		}
+		return true;
 	}
 
 }

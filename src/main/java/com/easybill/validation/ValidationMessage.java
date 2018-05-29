@@ -1,4 +1,4 @@
-package com.easybill.util;
+package com.easybill.validation;
 
 import java.io.IOException;
 import java.util.Properties;

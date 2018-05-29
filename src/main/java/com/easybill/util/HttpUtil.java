@@ -22,6 +22,7 @@ import org.json.simple.JSONValue;
 import org.springframework.security.access.AccessDeniedException;
 
 import com.easybill.pojo.ChangePasswordForm;
+import com.easybill.pojo.ItemVO;
 import com.easybill.pojo.LoginRequest;
 import com.easybill.pojo.UserVO;
 import com.google.gson.Gson;
@@ -37,10 +38,10 @@ public class HttpUtil {
 		userVO.setAddress("KR Puram");
 		userVO.setPassword("Abcd@001");
 		userVO.setEmail("abc@gmail.com");
-		userVO.setUserType("DISTRIBUTOR");
+		userVO.setUserType("");
 
 		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername("abcd@gmail.com");
+		loginRequest.setUsername("abc@gmail.com");
 		loginRequest.setPassword("Abcd@001");
 		JSONObject json = null;
 		try {
@@ -95,6 +96,38 @@ public class HttpUtil {
 		String url = "http://localhost:8090/user/sendResetPasswordEmail";
 		response = doPost(url, j.toJSONString(), null);
 		System.out.println(response);
+		
+		ItemVO itemVO = new ItemVO();
+		itemVO.setName("abcd 1");
+		itemVO.setBaseUnit("PC");
+		itemVO.setLargeUnit("BOX");
+		itemVO.setBaseUnitPrice(0.0f);
+		itemVO.setLargeUnitPrice(10000.0f);
+		itemVO.setUnitConversionValue(50);
+		
+		try {
+			response = doPost("http://localhost:8090/item/add", new Gson().toJson(itemVO), json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			url = "http://localhost:8090/item/get/5";
+			List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+			params.add(new BasicNameValuePair("email", "abcd@gmail.com"));
+
+			// String paramString = URLEncodedUtils.format(params, "utf-8");
+
+			// url += paramString;
+			response = doGet(url, json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		}
 		
 		/*EditUserForm userForm = new EditUserForm();
 		userForm.setId(5);

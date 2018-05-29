@@ -6,6 +6,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.easybill.validation.Patterns;
+import com.easybill.validation.ValidationCode;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,23 +15,23 @@ import lombok.Setter;
 @Setter
 public class EditUserForm {
 
-	@NotNull(message = "{id.null}")
-	@Min(value = 1, message = "{id.invalid}")
+	@NotNull(message = "{" + ValidationCode.EMPTY_ID + "}")
+	@Min(value = 1, message = "{" + ValidationCode.INVALID_ID + "}")
 	private Integer id;
 
-	@NotNull(message = "{name.empty}")
+	@NotNull(message = "{" + ValidationCode.EMPTY_NAME + "}")
 	@Size(min = 2, max = 50, message = "Name should be minimum {min} characters and maximum {max} characters")
-	@Pattern(regexp = Patterns.ALPHABETIC_NAME_PATTERN, message = "Name should only contain alphabets")
+	@Pattern(regexp = Patterns.ALPHABETIC_NAME_PATTERN, message = "{" + ValidationCode.INVALID_NAME + "}")
 	private String name;
 
-	@NotNull(message = "{email.empty}")
+	@NotNull(message = "{" + ValidationCode.EMPTY_EMAIL + "}")
 	@Size(min = 6, max = 50, message = "Email should be minimum {min} characters and maximum {max} characters")
-	@Pattern(regexp = Patterns.EMAIL_PATTERN, message = "Please enter valid email")
+	@Pattern(regexp = Patterns.EMAIL_PATTERN, message = "{" + ValidationCode.INVALID_EMAIL + "}")
 	private String email;
 
 	private String address;
 
-	@NotNull(message = "{phoneNumber.empty}")
+	@NotNull(message = "{" + ValidationCode.EMPTY_PHONE_NUMBER + "}")
 	@Size(min = 10, max = 10, message = "Phone number should have minimum {min} and maximum {max} digits")
 	private String phoneNumber;
 

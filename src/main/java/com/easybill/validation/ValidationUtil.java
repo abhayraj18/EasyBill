@@ -1,4 +1,4 @@
-package com.easybill.util;
+package com.easybill.validation;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

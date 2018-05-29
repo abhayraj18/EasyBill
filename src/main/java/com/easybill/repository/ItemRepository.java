@@ -8,4 +8,6 @@ import com.easybill.model.Item;
 @Repository
 public interface ItemRepository extends CrudRepository<Item, Integer> {
 
+	boolean existsByName(String name);
+
 }

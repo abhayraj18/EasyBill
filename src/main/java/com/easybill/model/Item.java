@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,7 +29,7 @@ public class Item {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 100, unique = true)
 	private String name;
 
 	@Enumerated(EnumType.STRING)
@@ -45,23 +46,25 @@ public class Item {
 	@Column(nullable = false, columnDefinition = "float(7,2)")
 	private Float largeUnitPrice;
 	
-	private Integer largeUnitInBaseUnit;
-
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
-	private Date addedAt;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date modifiedAt;
+	private Integer unitConversionValue;
 
 	@Column(columnDefinition = "bit(1) default b'0'")
 	private boolean archive;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(nullable = false)
+	@JoinColumn(name = "ADDED_BY", nullable = false, updatable = false)
 	private User addedBy;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false, updatable = false)
+	private Date addedAt;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(nullable = false)
+	@JoinColumn(name = "MODIFIED_BY")
 	private User modifiedBy;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedAt;
+
 }
