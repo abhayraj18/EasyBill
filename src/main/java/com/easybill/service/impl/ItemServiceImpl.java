@@ -1,6 +1,8 @@
 package com.easybill.service.impl;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -11,11 +13,12 @@ import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
 import com.easybill.model.Item;
 import com.easybill.model.User;
-import com.easybill.model.metadata.EnumConstant.Unit;
 import com.easybill.pojo.ItemVO;
 import com.easybill.repository.ItemRepository;
 import com.easybill.service.ItemService;
 import com.easybill.service.UserService;
+import com.easybill.specifications.ItemSpecification;
+import com.easybill.util.CommonUtil;
 import com.easybill.util.DateUtil;
 
 @Service
@@ -40,8 +43,7 @@ public class ItemServiceImpl implements ItemService {
 	
 	@Override
 	public void editItem(int userId, ItemVO itemVO) throws EntityNotFoundException, EntityExistsException {
-		Item item = itemRepository.findById(itemVO.getId())
-				.orElseThrow(() -> new EntityNotFoundException("Item could not be found with id: " + itemVO.getId()));
+		Item item = getItemById(itemVO.getId());
 		if (!StringUtils.equalsIgnoreCase(item.getName(), itemVO.getName())) {
 			doesItemExistWithName(itemVO.getName());
 		}
@@ -60,10 +62,11 @@ public class ItemServiceImpl implements ItemService {
 	private void setValues(Item item, ItemVO itemVO, int userId) throws EntityNotFoundException {
 		User user = userService.getUserById(userId);
 		item.setName(itemVO.getName());
-		item.setBaseUnit(Unit.valueOf(itemVO.getBaseUnit()));
-		item.setLargeUnit(Unit.valueOf(itemVO.getLargeUnit()));
+		item.setBaseUnit(CommonUtil.getUnit(itemVO.getBaseUnit()));
+		item.setLargeUnit(CommonUtil.getUnit(itemVO.getLargeUnit()));
 		item.setUnitConversionValue(itemVO.getUnitConversionValue());
 		setUnitPrice(item, itemVO.getBaseUnitPrice(), itemVO.getLargeUnitPrice(), itemVO.getUnitConversionValue());
+		// If adding, id will be null
 		if (Objects.isNull(itemVO.getId())) {
 			item.setAddedBy(user);
 			item.setAddedAt(DateUtil.getCurrentTime());
@@ -82,6 +85,10 @@ public class ItemServiceImpl implements ItemService {
 	 * @param unitConversionValue
 	 */
 	private void setUnitPrice(Item item, Float baseUnitPrice, Float largeUnitPrice, Integer unitConversionValue) {
+		/*
+		 * If baseUnitPrice is null or <= 0, set baseUnitPrice based on largeUnitPrice and unitConversionValue.
+		 * Else, set largeUnitPrice based on baseUnitPrice and unitConversionValue.
+		 */
 		if (Objects.isNull(baseUnitPrice) || baseUnitPrice <= 0) {
 			item.setLargeUnitPrice(largeUnitPrice);
 			item.setBaseUnitPrice(largeUnitPrice / unitConversionValue);
@@ -93,8 +100,7 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ItemVO getItemDetailsById(Integer itemId) throws EntityNotFoundException {
-		Item item = itemRepository.findById(itemId)
-				.orElseThrow(() -> new EntityNotFoundException("Item could not be found with id: " + itemId));
+		Item item = getItemById(itemId);
 		return mapToItemVO(item);
 	}
 
@@ -113,10 +119,21 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public Boolean doesItemExistWithName(String name) throws EntityExistsException {
-		if (itemRepository.existsByName(name)) {
+		if (itemRepository.count(ItemSpecification.hasName(name).and(ItemSpecification.isActive())) > 0) {
 			throw new EntityExistsException("Item already exists with name: " + name);
 		}
 		return Boolean.FALSE;
+	}
+
+	@Override
+	public List<ItemVO> getAllItems() {
+		return itemRepository.findAll(ItemSpecification.isActive()).stream().map(this::mapToItemVO).collect(Collectors.toList());
+	}
+
+	@Override
+	public Item getItemById(Integer itemId) throws EntityNotFoundException {
+		return itemRepository.findById(itemId)
+				.orElseThrow(() -> new EntityNotFoundException("Item could not be found with id: " + itemId));
 	}
 
 }

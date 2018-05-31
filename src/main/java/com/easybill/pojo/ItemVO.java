@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 
 import org.springframework.validation.Errors;
 
-import com.easybill.model.metadata.EnumConstant.Unit;
 import com.easybill.util.CommonUtil;
 import com.easybill.validation.Patterns;
 import com.easybill.validation.Validatable;
@@ -30,13 +29,13 @@ public class ItemVO implements Validatable {
 	@Pattern(regexp = Patterns.ALPHANUMERIC_NAME_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_NAME + "}")
 	private String name;
 
-	@NotBlank(message = "{" + ValidationCode.EMPTY_ITEM_BASE_UNIT + "}")
+	@NotBlank(message = "{" + ValidationCode.INVALID_ITEM_BASE_UNIT + "}")
 	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_BASE_UNIT + "}")
 	private String baseUnit;
 	
 	private Float baseUnitPrice;
 
-	@NotBlank(message = "{" + ValidationCode.EMPTY_ITEM_LARGE_UNIT + "}")
+	@NotBlank(message = "{" + ValidationCode.INVALID_ITEM_LARGE_UNIT + "}")
 	@Pattern(regexp = Patterns.UNIT_PATTERN, message = "{" + ValidationCode.INVALID_ITEM_LARGE_UNIT + "}")
 	private String largeUnit;
 	
@@ -64,7 +63,7 @@ public class ItemVO implements Validatable {
 
 	private boolean isBaseUnitLargerThanOrEqualToLargeUnit() {
 		if (CommonUtil.isValidUnit(getBaseUnit()) && CommonUtil.isValidUnit(getLargeUnit())) {
-			return Unit.valueOf(getBaseUnit()).getOrder() >= Unit.valueOf(getLargeUnit()).getOrder();
+			return CommonUtil.getUnit(getBaseUnit()).getOrder() >= CommonUtil.getUnit(getLargeUnit()).getOrder();
 		}
 		return false;
 	}

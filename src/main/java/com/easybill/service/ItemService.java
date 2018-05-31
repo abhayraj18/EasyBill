@@ -1,7 +1,10 @@
 package com.easybill.service;
 
+import java.util.List;
+
 import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
+import com.easybill.model.Item;
 import com.easybill.pojo.ItemVO;
 
 public interface ItemService {
@@ -43,5 +46,21 @@ public interface ItemService {
 	 * @throws EntityExistsException
 	 */
 	Boolean doesItemExistWithName(String name) throws EntityExistsException;
+
+	/**
+	 * Service to get list of all items
+	 * 
+	 * @return list containing item details
+	 */
+	List<ItemVO> getAllItems();
+
+	/**
+	 * Service to get item using id.
+	 * 
+	 * @param id
+	 * @return item
+	 * @throws EntityNotFoundException
+	 */
+	Item getItemById(Integer id) throws EntityNotFoundException;
 
 }

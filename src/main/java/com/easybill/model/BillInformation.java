@@ -25,9 +25,6 @@ public class BillInformation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, unique = true, length = 50)
-	private String billNumber;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private Date billingDate;
@@ -41,8 +38,5 @@ public class BillInformation {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orderInfoId", nullable = false)
 	private OrderInfo orderInfo;
-
-	@Column(nullable = false)
-	Integer userId;
 
 }

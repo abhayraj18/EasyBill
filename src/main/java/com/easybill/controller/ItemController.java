@@ -32,7 +32,6 @@ import com.easybill.validation.ValidationUtil;
 
 @RestController
 @RequestMapping(value = "/item")
-@Secured(Constants.ROLE_DISTRIBUTOR)
 public class ItemController {
 
 	@Autowired
@@ -42,6 +41,7 @@ public class ItemController {
 	private ItemService itemService;
 
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Secured(Constants.ROLE_DISTRIBUTOR)
 	public ResponseEntity<String> addItem(@CurrentUser UserPrincipal currentUser, @RequestBody @Validated ItemVO itemVO,
 			Errors result) throws EntityNotFoundException, ValidationException, EntityExistsException {
 		// Do custom validations
@@ -55,6 +55,7 @@ public class ItemController {
 	}
 	
 	@PostMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Secured(Constants.ROLE_DISTRIBUTOR)
 	public ResponseEntity<String> editItem(@CurrentUser UserPrincipal currentUser, @RequestBody @Validated ItemVO itemVO,
 			Errors result) throws EntityNotFoundException, ValidationException, EntityExistsException {
 		// Do custom validations
@@ -71,9 +72,16 @@ public class ItemController {
 	}
 
 	@GetMapping("/get/{itemId}")
+	@Secured(Constants.ROLE_DISTRIBUTOR)
 	public ResponseEntity<String> getItem(@PathVariable("itemId") Integer itemId) throws EntityNotFoundException {
 		ItemVO itemVO = itemService.getItemDetailsById(itemId);
 		return ResponseUtil.buildSuccessResponseEntity(CommonUtil.convertToJSONString(itemVO));
+	}
+	
+	@GetMapping("/getAll")
+	@Secured({ Constants.ROLE_DISTRIBUTOR, Constants.ROLE_WHOLESALER })
+	public ResponseEntity<String> getAllItems() {
+		return ResponseUtil.buildSuccessResponseEntity(CommonUtil.convertToJSONString(itemService.getAllItems()));
 	}
 	
 }

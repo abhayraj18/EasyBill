@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.easybill.model.Item;
+import com.easybill.model.OrderInfo;
 
 @Repository
-public interface ItemRepository extends CrudRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
+public interface OrderInfoRepository extends CrudRepository<OrderInfo, Integer>, JpaSpecificationExecutor<OrderInfo> {
 
 }

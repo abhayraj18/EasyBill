@@ -17,6 +17,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.easybill.model.metadata.EnumConstant.Unit;
 import com.easybill.validation.Patterns;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -95,6 +96,10 @@ public class CommonUtil {
 			return false;
 		}
 		return true;
+	}
+
+	public static Unit getUnit(String unit) {
+		return Unit.valueOf(unit);
 	}
 
 }

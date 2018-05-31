@@ -2,6 +2,7 @@ package com.easybill.util;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ import org.springframework.security.access.AccessDeniedException;
 import com.easybill.pojo.ChangePasswordForm;
 import com.easybill.pojo.ItemVO;
 import com.easybill.pojo.LoginRequest;
+import com.easybill.pojo.OrderDetailVO;
+import com.easybill.pojo.OrderVO;
 import com.easybill.pojo.UserVO;
 import com.google.gson.Gson;
 
@@ -38,8 +41,15 @@ public class HttpUtil {
 		userVO.setAddress("KR Puram");
 		userVO.setPassword("Abcd@001");
 		userVO.setEmail("abc@gmail.com");
-		userVO.setUserType("");
+		userVO.setUserType("WHOLESALER");
 
+		try {
+			response = doPost("http://localhost:8090/user/add", new Gson().toJson(userVO), null);
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		LoginRequest loginRequest = new LoginRequest();
 		loginRequest.setUsername("abc@gmail.com");
 		loginRequest.setPassword("Abcd@001");
@@ -48,13 +58,6 @@ public class HttpUtil {
 			response = doPost("http://localhost:8090/auth/login", new Gson().toJson(loginRequest), null);
 			System.out.println(response);
 			json = (JSONObject) JSONValue.parse(response);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			response = doPost("http://localhost:8090/user/add", new Gson().toJson(userVO), null);
-			System.out.println(response);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +101,7 @@ public class HttpUtil {
 		System.out.println(response);
 		
 		ItemVO itemVO = new ItemVO();
-		itemVO.setName("abcd 1");
+		itemVO.setName("abcd");
 		itemVO.setBaseUnit("PC");
 		itemVO.setLargeUnit("BOX");
 		itemVO.setBaseUnitPrice(0.0f);
@@ -113,7 +116,49 @@ public class HttpUtil {
 		}
 		
 		try {
-			url = "http://localhost:8090/item/get/5";
+			url = "http://localhost:8090/item/getAll";
+			List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+			params.add(new BasicNameValuePair("email", "abcd@gmail.com"));
+
+			// String paramString = URLEncodedUtils.format(params, "utf-8");
+
+			// url += paramString;
+			response = doGet(url, json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		}
+		
+		OrderVO orderVO = new OrderVO();
+		orderVO.setDescription("order");
+		List<OrderDetailVO> orderDetails = new ArrayList<>();
+		OrderDetailVO detailVO = new OrderDetailVO();
+		detailVO.setId(1);
+		detailVO.setItemId(1);
+		detailVO.setQuantity(10f);
+		detailVO.setUnit("PC");
+		orderDetails.add(detailVO);
+		
+		detailVO = new OrderDetailVO();
+		detailVO.setId(0);
+		detailVO.setItemId(2);
+		detailVO.setQuantity(1f);
+		detailVO.setUnit("PC");
+		orderDetails.add(detailVO);
+		orderVO.setOrderDetails(orderDetails);
+		
+		try {
+			response = doPost("http://localhost:8090/order/add", new Gson().toJson(orderVO), json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			url = "http://localhost:8090/order/get/3";
 			List<NameValuePair> params = new LinkedList<NameValuePair>();
 
 			params.add(new BasicNameValuePair("email", "abcd@gmail.com"));

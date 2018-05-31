@@ -1,8 +1,10 @@
 package com.easybill.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,22 +22,21 @@ import javax.persistence.TemporalType;
 import com.easybill.model.metadata.EnumConstant;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 public class OrderInfo {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, unique = true, length = 50)
-	private String orderNumber;
-
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	private Date orderDate;
 
 	private String description;
@@ -43,13 +46,17 @@ public class OrderInfo {
 	private EnumConstant.Status status;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
 	private Date modifiedAt;
 
-	@Column(nullable = false)
-	Integer userId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ORDERED_BY", nullable = false, updatable = false)
+	private User orderedBy;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MODIFIED_BY")
+	private User modifiedBy;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderInfo")
-	private List<OrderDetail> orderDetails;
-
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orderInfo", cascade = CascadeType.PERSIST)
+	private List<OrderDetail> orderDetails = new ArrayList<>();
+	
 }

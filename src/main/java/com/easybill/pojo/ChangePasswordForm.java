@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class ChangePasswordForm {
 
-	@NotNull(message = "{" + ValidationCode.EMPTY_ID + "}")
+	@NotNull(message = "{" + ValidationCode.INVALID_ID + "}")
 	@Min(value = 1, message = "{" + ValidationCode.INVALID_ID + "}")
 	private Integer id;
 
