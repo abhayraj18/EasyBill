@@ -12,6 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,9 +28,9 @@ public class PaymentInformation {
 	private Integer id;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date paymentDate;
+	private Date paidAt;
 
-	@Column(nullable = false, columnDefinition = "float(7,2)")
+	@Column(nullable = false, columnDefinition = "float(9,2)")
 	private Float amount;
 
 	private String description;
@@ -36,9 +39,10 @@ public class PaymentInformation {
 	private boolean approved;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date approvalDate;
+	private Date approvedAt;
 
 	@ManyToOne
 	@JoinColumn(name = "billId")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BillInformation billInformation;
 }

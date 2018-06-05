@@ -3,6 +3,8 @@ package com.easybill.model;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import com.easybill.model.metadata.EnumConstant.UserType;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +19,7 @@ public class Distributor extends User {
 
 	public Distributor(String name, String username, String email, String address, String phoneNumber) {
 		super(name, username, email, address, phoneNumber);
+		setType(UserType.DISTRIBUTOR);
 	}
 	
 }

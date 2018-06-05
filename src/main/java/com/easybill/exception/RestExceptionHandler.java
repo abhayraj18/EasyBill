@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -54,6 +55,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(RecentPasswordException.class)
 	public ResponseEntity<String> handleRecentPasswordException(HttpServletRequest request, Exception ex) {
+		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
+	}
+	
+	@ExceptionHandler(BillAmountNotPaidException.class)
+	public ResponseEntity<String> handleBillAmountNotPaidException(HttpServletRequest request, Exception ex) {
+		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
+	}
+	
+	@ExceptionHandler(OrderAlreadyApprovedException.class)
+	public ResponseEntity<String> handleOrderAlreadyApprovedException(HttpServletRequest request, Exception ex) {
+		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
+	}
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<String> handleDataIntegrityViolationException(HttpServletRequest request, Exception ex) {
 		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
 	}
 

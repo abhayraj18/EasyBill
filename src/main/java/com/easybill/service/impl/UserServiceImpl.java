@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 			user = getWholesaler(userVO);
 			break;
 		default:
-			throw new ValidationException(ExceptionMessage.USER_TYPE_EXCEPTION_MESSAGE);
+			throw new ValidationException(ExceptionMessage.INVALID_USER_TYPE_EXCEPTION_MESSAGE);
 		}
 		user.setPassword(passwordEncoder.encode(userVO.getPassword()));
 		userRepository.save(user);

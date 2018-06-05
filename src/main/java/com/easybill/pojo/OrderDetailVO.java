@@ -20,6 +20,8 @@ public class OrderDetailVO {
 	@NotNull(message = "{" + ValidationCode.INVALID_ORDER_ITEM_ID + "}")
 	@Min(value = 1, message = "{" + ValidationCode.INVALID_ORDER_ITEM_ID + "}")
 	private Integer itemId;
+	
+	private String itemName;
 
 	@NotNull(message = "{" + ValidationCode.INVALID_QUANTITY + "}")
 	@Min(value = 1, message = "{" + ValidationCode.INVALID_QUANTITY + "}")

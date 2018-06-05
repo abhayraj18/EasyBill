@@ -16,6 +16,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.easybill.model.metadata.EnumConstant;
+import com.easybill.model.metadata.EnumConstant.Unit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -66,5 +67,9 @@ public class Item {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedAt;
+
+	public boolean isValidUnit(Unit unit) {
+		return unit == getBaseUnit() || unit == getLargeUnit();
+	}
 
 }

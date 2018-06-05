@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
 
 import com.easybill.model.metadata.EnumConstant;
 import com.easybill.model.metadata.EnumConstant.Status;
+import com.easybill.model.metadata.EnumConstant.UserType;
 import com.easybill.util.DateUtil;
 
 import lombok.Getter;
@@ -85,6 +86,10 @@ public class User {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedAt;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = EnumConstant.USER_TYPE, nullable = false, length = 50, updatable = false)
+	private UserType type;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -136,6 +141,10 @@ public class User {
 			setLastModifiedAt(currentTime);
 		}
 		this.status = status;
+	}
+
+	public boolean canApproveOrder(User orderedBy) {
+		return this.getType().getRank() > orderedBy.getType().getRank();
 	}
 
 }
