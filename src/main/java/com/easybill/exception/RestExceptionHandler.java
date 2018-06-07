@@ -63,8 +63,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
 	}
 	
-	@ExceptionHandler(OrderAlreadyApprovedException.class)
-	public ResponseEntity<String> handleOrderAlreadyApprovedException(HttpServletRequest request, Exception ex) {
+	@ExceptionHandler(AlreadyApprovedException.class)
+	public ResponseEntity<String> handleAlreadyApprovedException(HttpServletRequest request, Exception ex) {
 		return ResponseUtil.buildErrorResponseEntity(ex.getMessage(), StatusCode.FAIL.getStatus());
 	}
 	

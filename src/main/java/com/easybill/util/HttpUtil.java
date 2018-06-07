@@ -197,7 +197,7 @@ public class HttpUtil {
 		}
 		
 		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername("abcd@gmail.com");
+		loginRequest.setUsername("abc@gmail.com");
 		loginRequest.setPassword("Abcd@001");
 		JSONObject json = null;
 		try {
@@ -260,11 +260,15 @@ public class HttpUtil {
 		editOrderVO.setApprove(true);
 		
 		try {
-			// response = doPost("http://localhost:8090/order/edit", new Gson().toJson(editOrderVO), json.get("accessToken").toString());
+			response = doPost("http://localhost:8090/order/edit", new Gson().toJson(editOrderVO), json.get("accessToken").toString());
 			System.out.println(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		response = doPut("http://localhost:8090/order/approve/3", json.get("accessToken").toString());
+		System.out.println(response);
+		
 		String url;
 		try {
 			url = "http://localhost:8090/order/get/3";

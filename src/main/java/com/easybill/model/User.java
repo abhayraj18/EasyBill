@@ -87,9 +87,12 @@ public class User {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedAt;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = EnumConstant.USER_TYPE, nullable = false, length = 50, updatable = false)
-	private UserType type;
+	/*
+	 * Map to discriminator column, should not be insertable, updatable, nullable
+	 * Value should be from EnumConstant.UserType enum constant
+	 */
+	@Column(name = "USER_TYPE", nullable = false, updatable = false, insertable = false)
+	private String userType;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -143,8 +146,13 @@ public class User {
 		this.status = status;
 	}
 
-	public boolean canApproveOrder(User orderedBy) {
-		return this.getType().getRank() > orderedBy.getType().getRank();
+	// Users can approve orders/payments from another user with rank 1 less than them.
+	public boolean canApprove(User orderedBy) {
+		return getType().getRank() == (orderedBy.getType().getRank() + 1);
+	}
+
+	private UserType getType() {
+		return UserType.valueOf(getUserType());
 	}
 
 }

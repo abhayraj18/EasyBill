@@ -24,5 +24,7 @@ public class ValidationCode {
 	public static final String INVALID_ORDER_ITEM_ID = "order.item.invalid";
 	public static final String INVALID_ORDER_ITEM_UNIT = "order.item.unit.invalid";
 	public static final String INVALID_QUANTITY = "order.item.quantity.invalid";
+	public static final String INVALID_BILL_ID = "bill.id.invalid";
+	public static final String INVALID_BILL_AMOUNT = "bill.amount.invalid";;
 	
 }

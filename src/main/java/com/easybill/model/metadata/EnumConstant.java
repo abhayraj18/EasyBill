@@ -4,7 +4,6 @@ public class EnumConstant {
 	public static final String UNITS = "enum ('PC', 'BOX', 'BAG')";
 	public static final String STATUS = "enum ('ACTIVE', 'INACTIVE')";
 	public static final String STATUS_DEFAULT = "ACTIVE";
-	public static final String USER_TYPE = "enum ('DISTRIBUTOR', 'WHOLESALER')";
 
 	public enum RoleName {
 		ROLE_DISTRIBUTOR, ROLE_WHOLESALER, ROLE_VISITOR

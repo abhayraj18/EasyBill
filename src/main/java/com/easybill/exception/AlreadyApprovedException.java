@@ -10,14 +10,14 @@ import lombok.Getter;
  * @author abhay.jain
  *
  */
-public class OrderAlreadyApprovedException extends Exception {
+public class AlreadyApprovedException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private String message;
 
-	public OrderAlreadyApprovedException(String message) {
+	public AlreadyApprovedException(String message) {
 		super();
 		this.message = message;
 	}

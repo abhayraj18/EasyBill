@@ -5,7 +5,7 @@ import java.util.List;
 import com.easybill.exception.BillAmountNotPaidException;
 import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
-import com.easybill.exception.OrderAlreadyApprovedException;
+import com.easybill.exception.AlreadyApprovedException;
 import com.easybill.exception.ValidationException;
 import com.easybill.model.OrderInfo;
 import com.easybill.pojo.EditOrderVO;
@@ -29,12 +29,12 @@ public interface OrderService {
 	 * @param userId
 	 * @param editOrderVO
 	 * @throws EntityNotFoundException
-	 * @throws OrderAlreadyApprovedException 
+	 * @throws AlreadyApprovedException 
 	 * @throws ValidationException 
 	 * @throws EntityExistsException 
 	 */
 	void editOrder(Integer userId, EditOrderVO editOrderVO)
-			throws EntityNotFoundException, OrderAlreadyApprovedException, ValidationException, EntityExistsException;
+			throws EntityNotFoundException, AlreadyApprovedException, ValidationException, EntityExistsException;
 
 	/**
 	 * Service to get OrderInfo by id.
@@ -70,5 +70,5 @@ public interface OrderService {
 	void deleteOrderById(Integer orderId) throws EntityNotFoundException, BillAmountNotPaidException;
 
 	void approveOrder(Integer orderId)
-			throws EntityNotFoundException, ValidationException, OrderAlreadyApprovedException, EntityExistsException;
+			throws EntityNotFoundException, ValidationException, AlreadyApprovedException, EntityExistsException;
 }

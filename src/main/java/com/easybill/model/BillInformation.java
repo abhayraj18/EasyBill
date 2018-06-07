@@ -26,7 +26,7 @@ public class BillInformation {
     @GeneratedValue(generator = "foreigngen")
     @GenericGenerator(strategy = "foreign", name="foreigngen",
             parameters = @Parameter(name = "property", value="orderInfo"))
-	private Integer orderInfoId;
+	private Integer id;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -35,8 +35,11 @@ public class BillInformation {
 	@Column(nullable = false, columnDefinition = "float(9,2)")
 	private Float amount;
 
-	@Column(columnDefinition = "float(9,2)")
+	@Column(nullable = false, columnDefinition = "float(9,2)")
 	private Float pendingAmount;
+	
+	@Column(columnDefinition = "float(9,2)")
+	private Float excessAmount;
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "billInformation")
 	private OrderInfo orderInfo;

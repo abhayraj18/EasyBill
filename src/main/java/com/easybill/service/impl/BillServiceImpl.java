@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.easybill.exception.EntityExistsException;
+import com.easybill.exception.EntityNotFoundException;
 import com.easybill.exception.ValidationException;
 import com.easybill.model.BillInformation;
 import com.easybill.model.Item;
@@ -65,6 +66,24 @@ public class BillServiceImpl implements BillService {
 			}
 		}
 		return amount;
+	}
+
+	@Override
+	public BillInformation getById(Integer billId) throws EntityNotFoundException {
+		return billInformationRepository.findById(billId)
+				.orElseThrow(() -> new EntityNotFoundException("Bill could not be found with id: " + billId));
+	}
+
+	@Override
+	public void updateBill(BillInformation billInformation, Float amount) {
+		Float pendingAmount = billInformation.getPendingAmount();
+		if (pendingAmount - amount >= 0) {
+			billInformation.setPendingAmount(pendingAmount - amount);
+		} else {
+			billInformation.setExcessAmount(amount - pendingAmount);
+			billInformation.setPendingAmount(0.0f);
+		}
+		billInformationRepository.save(billInformation);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +15,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import com.easybill.util.DateUtil;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -45,4 +48,14 @@ public class PaymentInformation {
 	@JoinColumn(name = "billId")
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BillInformation billInformation;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "APPROVED_BY")
+	private User approvedBy;
+	
+	public void approve(User user) {
+		setApproved(true);
+		setApprovedAt(DateUtil.getCurrentTime());
+		setApprovedBy(user);
+	}
 }

@@ -23,7 +23,7 @@ import com.easybill.config.security.UserPrincipal;
 import com.easybill.exception.BillAmountNotPaidException;
 import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
-import com.easybill.exception.OrderAlreadyApprovedException;
+import com.easybill.exception.AlreadyApprovedException;
 import com.easybill.exception.ValidationException;
 import com.easybill.pojo.EditOrderVO;
 import com.easybill.pojo.OrderVO;
@@ -57,7 +57,7 @@ public class OrderController {
 	@Secured({ Constants.ROLE_DISTRIBUTOR, Constants.ROLE_WHOLESALER })
 	public ResponseEntity<String> editOrder(@CurrentUser UserPrincipal currentUser,
 			@RequestBody @Validated EditOrderVO editOrderVO, Errors result)
-			throws EntityNotFoundException, ValidationException, EntityExistsException, OrderAlreadyApprovedException {
+			throws EntityNotFoundException, ValidationException, EntityExistsException, AlreadyApprovedException {
 		if (result.hasErrors()) {
 			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
 			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
@@ -69,7 +69,7 @@ public class OrderController {
 	@PutMapping(value = "/approve/{orderId}")
 	@Secured({ Constants.ROLE_DISTRIBUTOR })
 	public ResponseEntity<String> approveOrder(@PathVariable("orderId") Integer orderId)
-			throws EntityNotFoundException, ValidationException, OrderAlreadyApprovedException, EntityExistsException {
+			throws EntityNotFoundException, ValidationException, AlreadyApprovedException, EntityExistsException {
 		orderService.approveOrder(orderId);
 		return ResponseUtil.buildSuccessResponseEntity("Order is approved");
 	}

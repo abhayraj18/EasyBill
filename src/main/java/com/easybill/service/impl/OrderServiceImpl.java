@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.easybill.exception.BillAmountNotPaidException;
 import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
-import com.easybill.exception.OrderAlreadyApprovedException;
+import com.easybill.exception.AlreadyApprovedException;
 import com.easybill.exception.ValidationException;
 import com.easybill.model.BillInformation;
 import com.easybill.model.Item;
@@ -86,10 +86,10 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void editOrder(Integer userId, EditOrderVO editOrderVO)
-			throws EntityNotFoundException, OrderAlreadyApprovedException, ValidationException, EntityExistsException {
+			throws EntityNotFoundException, AlreadyApprovedException, ValidationException, EntityExistsException {
 		OrderInfo orderInfo = getOrderById(editOrderVO.getId());
 		if (orderInfo.isApproved()) {
-			throw new OrderAlreadyApprovedException("Order is already approved: " + orderInfo.getId());
+			throw new AlreadyApprovedException("Order is already approved: " + orderInfo.getId());
 		}
 		User user = userService.getUserById(userId);
 		orderInfo.setModifiedBy(user);
@@ -114,17 +114,17 @@ public class OrderServiceImpl implements OrderService {
 		orderInfoRepository.save(orderInfo);
 		
 		// Approve the order if user rank is more than the user who placed the order
-		if (editOrderVO.isApprove() && user.canApproveOrder(orderInfo.getOrderedBy())) {
+		if (editOrderVO.isApprove() && user.canApprove(orderInfo.getOrderedBy())) {
 			approveOrder(editOrderVO.getId());
 		}
 	}
 
 	@Override
 	public void approveOrder(Integer orderId)
-			throws EntityNotFoundException, ValidationException, OrderAlreadyApprovedException, EntityExistsException {
+			throws EntityNotFoundException, ValidationException, AlreadyApprovedException, EntityExistsException {
 		OrderInfo orderInfo = getOrderById(orderId);
 		if (orderInfo.isApproved()) {
-			throw new OrderAlreadyApprovedException("Order is already approved: " + orderInfo.getId());
+			throw new AlreadyApprovedException("Order is already approved: " + orderInfo.getId());
 		}
 		orderInfo.setApproved(true);
 		billService.saveBill(orderInfo);
