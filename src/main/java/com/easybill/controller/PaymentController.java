@@ -30,13 +30,13 @@ import com.easybill.validation.ValidationUtil;
 
 @RestController
 @RequestMapping(value = "/payment")
-@Secured({ Constants.ROLE_DISTRIBUTOR, Constants.ROLE_WHOLESALER })
 public class PaymentController {
 
 	@Autowired
 	private PaymentService paymentService;
 
 	@PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Secured({ Constants.ROLE_WHOLESALER })
 	public ResponseEntity<String> addPayment(@CurrentUser UserPrincipal currentUser,
 			@RequestBody @Validated PaymentForm paymentForm, Errors result)
 			throws ValidationException, EntityExistsException, EntityNotFoundException {
@@ -52,7 +52,7 @@ public class PaymentController {
 	@Secured({ Constants.ROLE_DISTRIBUTOR })
 	public ResponseEntity<String> approveOrder(@CurrentUser UserPrincipal currentUser,
 			@PathVariable("paymentId") Integer paymentId) throws EntityNotFoundException {
-		paymentService.approveOrder(currentUser.getId(), paymentId);
+		paymentService.approvePayment(currentUser.getId(), paymentId);
 		return ResponseUtil.buildSuccessResponseEntity("Payment is approved");
 	}
 

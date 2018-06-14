@@ -86,4 +86,14 @@ public class BillServiceImpl implements BillService {
 		billInformationRepository.save(billInformation);
 	}
 
+	@Override
+	public Float getExcessAmount(Integer userId) {
+		return billInformationRepository.getExcessAmount(userId);
+	}
+
+	@Override
+	public void resetExcessAmount(Integer userId) {
+		billInformationRepository.resetExcessAmount(userId);
+	}
+
 }

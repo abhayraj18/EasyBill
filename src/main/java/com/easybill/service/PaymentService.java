@@ -10,7 +10,7 @@ public interface PaymentService {
 	
 	void addPayment(Integer userId, PaymentForm paymentForm) throws ValidationException, EntityExistsException, EntityNotFoundException;
 
-	void approveOrder(Integer userId, Integer paymentId) throws EntityNotFoundException;
+	void approvePayment(Integer userId, Integer paymentId) throws EntityNotFoundException;
 
 	PaymentInformation getById(Integer paymentId) throws EntityNotFoundException;
 

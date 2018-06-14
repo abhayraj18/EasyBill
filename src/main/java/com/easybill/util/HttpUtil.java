@@ -31,6 +31,7 @@ import com.easybill.pojo.ItemVO;
 import com.easybill.pojo.LoginRequest;
 import com.easybill.pojo.OrderDetailVO;
 import com.easybill.pojo.OrderVO;
+import com.easybill.pojo.PaymentForm;
 import com.easybill.pojo.UserVO;
 import com.google.gson.Gson;
 
@@ -174,9 +175,12 @@ public class HttpUtil {
 			e.printStackTrace();
 		}
 		
-		response = doPut("http://localhost:8090/order/approve/3", json.get("accessToken").toString());
+		response = doPut("http://localhost:8090/order/approve/2", json.get("accessToken").toString());
 		System.out.println(response);
-		return json;		
+		
+		response = doPut("http://localhost:8090/payment/approve/6", json.get("accessToken").toString());
+		System.out.println(response);
+		return json;
 	}
 	
 	private static JSONObject wholesalerSpecific() {
@@ -197,7 +201,7 @@ public class HttpUtil {
 		}
 		
 		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername("abc@gmail.com");
+		loginRequest.setUsername("abcd@gmail.com");
 		loginRequest.setPassword("Abcd@001");
 		JSONObject json = null;
 		try {
@@ -299,6 +303,17 @@ public class HttpUtil {
 			response = doDelete(url, json.get("accessToken").toString());
 			System.out.println(response);
 		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		}
+		
+		PaymentForm paymentForm = new PaymentForm();
+		paymentForm.setAmount(6000f);
+		paymentForm.setBillId(2);
+		paymentForm.setDescription("paying less");
+		try {
+			// response = doPost("http://localhost:8090/payment/add", new Gson().toJson(paymentForm), json.get("accessToken").toString());
+			System.out.println(response);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return json;		

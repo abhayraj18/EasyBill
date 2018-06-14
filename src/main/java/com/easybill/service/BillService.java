@@ -14,4 +14,8 @@ public interface BillService {
 
 	void updateBill(BillInformation billInformation, Float amount);
 
+	Float getExcessAmount(Integer userId);
+
+	void resetExcessAmount(Integer userId);
+
 }

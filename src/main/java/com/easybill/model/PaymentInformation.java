@@ -45,7 +45,7 @@ public class PaymentInformation {
 	private Date approvedAt;
 
 	@ManyToOne
-	@JoinColumn(name = "billId")
+	@JoinColumn(name = "billId", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BillInformation billInformation;
 	

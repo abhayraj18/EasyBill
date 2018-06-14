@@ -1,5 +1,7 @@
 package com.easybill.service.impl;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,28 +33,31 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void addPayment(Integer userId, PaymentForm paymentForm) throws ValidationException, EntityExistsException, EntityNotFoundException {
 		BillInformation billInformation = billService.getById(paymentForm.getBillId());
+		Float excessAmount = billService.getExcessAmount(userId);
+		Float amount = paymentForm.getAmount();
+		if (Objects.nonNull(excessAmount) && excessAmount > 0) {
+			amount += excessAmount;
+			billService.resetExcessAmount(userId);
+		}
 		PaymentInformation paymentInformation = new PaymentInformation();
 		paymentInformation.setBillInformation(billInformation);
 		paymentInformation.setDescription(paymentForm.getDescription());
-		paymentInformation.setAmount(paymentForm.getAmount());
+		paymentInformation.setAmount(amount);
 		paymentInformation.setPaidAt(DateUtil.getCurrentTime());
-		if (paymentForm.isApprove()) {
-			User user = userService.getUserById(userId);
-			if (user.canApprove(billInformation.getOrderInfo().getOrderedBy())) {
-				paymentInformation.approve(user);
-			}
-		}
 		paymentInformationRepository.save(paymentInformation);
-		// Update bill pending/excess amount
-		billService.updateBill(billInformation, paymentInformation.getAmount());
 	}
 
 	@Override
-	public void approveOrder(Integer userId, Integer paymentId) throws EntityNotFoundException {
+	public void approvePayment(Integer userId, Integer paymentId) throws EntityNotFoundException {
 		PaymentInformation paymentInformation = getById(paymentId);
 		if (!paymentInformation.isApproved()) {
 			User user = userService.getUserById(userId);
-			paymentInformation.approve(user);
+			BillInformation billInformation = paymentInformation.getBillInformation();
+			if (user.canApprove(billInformation.getOrderInfo().getOrderedBy())) {
+				paymentInformation.approve(user);
+				// Update bill pending/excess amount
+				billService.updateBill(billInformation, paymentInformation.getAmount());
+			}
 		}
 	}
 
