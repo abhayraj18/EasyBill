@@ -1,8 +1,5 @@
 package com.easybill.controller;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.easybill.config.security.CurrentUser;
 import com.easybill.config.security.UserPrincipal;
+import com.easybill.exception.AlreadyApprovedException;
 import com.easybill.exception.BillAmountNotPaidException;
 import com.easybill.exception.EntityExistsException;
 import com.easybill.exception.EntityNotFoundException;
-import com.easybill.exception.AlreadyApprovedException;
 import com.easybill.exception.ValidationException;
 import com.easybill.pojo.EditOrderVO;
 import com.easybill.pojo.OrderVO;
@@ -45,23 +42,17 @@ public class OrderController {
 	public ResponseEntity<String> addOrder(@CurrentUser UserPrincipal currentUser,
 			@RequestBody @Validated OrderVO orderVO, Errors result)
 			throws EntityNotFoundException, ValidationException, EntityExistsException {
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		orderService.addOrder(currentUser.getId(), orderVO);
 		return ResponseUtil.buildSuccessResponseEntity("Order placed successfully");
 	}
-	
+
 	@PostMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@Secured({ Constants.ROLE_DISTRIBUTOR, Constants.ROLE_WHOLESALER })
 	public ResponseEntity<String> editOrder(@CurrentUser UserPrincipal currentUser,
 			@RequestBody @Validated EditOrderVO editOrderVO, Errors result)
 			throws EntityNotFoundException, ValidationException, EntityExistsException, AlreadyApprovedException {
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		orderService.editOrder(currentUser.getId(), editOrderVO);
 		return ResponseUtil.buildSuccessResponseEntity("Order edited successfully");
 	}

@@ -20,5 +20,7 @@ public class Patterns {
 	public static final String ALPHANUMERIC_NAME_PATTERN = "[a-zA-Z0-9 ]+";
 	
 	public static final String UNIT_PATTERN = "\\bPC\\b|\\bBOX\\b|\\bBAG\\b";
+	
+	public static final String NUMERIC_PATTERN = "[0-9]+";
 
 }

@@ -10,6 +10,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import com.easybill.exception.ValidationException;
+import com.easybill.util.CommonUtil;
+
 public class ValidationUtil {
 
 	/**
@@ -59,6 +62,19 @@ public class ValidationUtil {
 				: errorMap.get(fieldError.getField());
 		fieldErrors.add(error.getDefaultMessage());
 		errorMap.put(fieldError.getField(), fieldErrors);
+	}
+	
+	/**
+	 * Throw @ValidationException if there are any validation errors.
+	 * 
+	 * @param result
+	 * @throws ValidationException
+	 */
+	public static void checkValidationErrors(Errors result) throws ValidationException {
+		if (result.hasErrors()) {
+			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
+			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
+		}
 	}
 
 }

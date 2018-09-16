@@ -90,16 +90,28 @@ public class CommonUtil {
 		return Objects.nonNull(id) && id > 0;
 	}
 	
+	public static Unit getUnit(String unit) {
+		return Unit.valueOf(unit);
+	}
+	
 	public static boolean isValidUnit(String unit) {
-		Pattern unitPattern = Pattern.compile(Patterns.UNIT_PATTERN);
-		if (!unitPattern.matcher(unit).find()) {
+		return doesValueMatchPattern(unit, Patterns.UNIT_PATTERN);
+	}
+
+	public static boolean isValidOTP(String otp) {
+		return doesValueMatchPattern(otp, Patterns.NUMERIC_PATTERN);
+	}
+
+	public static boolean isValidEmail(String emailId) {
+		return doesValueMatchPattern(emailId, Patterns.EMAIL_PATTERN);
+	}
+	
+	private static boolean doesValueMatchPattern(String unit, String patternToMatch) {
+		Pattern pattern = Pattern.compile(patternToMatch);
+		if (!pattern.matcher(unit).find()) {
 			return false;
 		}
 		return true;
-	}
-
-	public static Unit getUnit(String unit) {
-		return Unit.valueOf(unit);
 	}
 
 }

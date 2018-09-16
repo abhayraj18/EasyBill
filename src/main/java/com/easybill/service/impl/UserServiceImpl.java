@@ -30,7 +30,9 @@ import com.easybill.model.metadata.EnumConstant.Status;
 import com.easybill.model.metadata.EnumConstant.UserType;
 import com.easybill.pojo.ChangePasswordForm;
 import com.easybill.pojo.EditUserForm;
+import com.easybill.pojo.ResetPasswordForm;
 import com.easybill.pojo.UserVO;
+import com.easybill.pojo.OTPForm;
 import com.easybill.repository.UserPasswordRepository;
 import com.easybill.repository.UserRepository;
 import com.easybill.service.EmailService;
@@ -112,7 +114,7 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setPassword(passwordEncoder.encode(userVO.getPassword()));
 		userRepository.save(user);
-		sendVerificationEmail(user);
+		sendVerificationEmail(user, true);
 		return user;
 	}
 
@@ -193,7 +195,7 @@ public class UserServiceImpl implements UserService {
 		// If user is editing email, check if its available
 		if (!StringUtils.equalsIgnoreCase(user.getEmail(), userForm.getEmail())) { 
 			isEmailAvailable(userForm.getEmail());
-			sendVerificationEmail(user);
+			sendVerificationEmail(user, false);
 		}
 		
 		user.setName(userForm.getName());
@@ -203,47 +205,9 @@ public class UserServiceImpl implements UserService {
 		user.setLastModifiedAt(DateUtil.getCurrentTime());
 		userRepository.save(user);
 	}
-
+	
 	@Override
-	public void inactivateUser(Integer userId) throws EntityNotFoundException {
-		User user = getUserById(userId);
-		user.setStatus(Status.INACTIVE);
-		// Append |userId to user name so that its available for new user 
-		user.setUsername(user.getUsername() + Constants.PIPE + userId);
-		userRepository.save(user);
-	}
-
-	@Override
-	public void changePassword(ChangePasswordForm changePasswordForm) throws EntityNotFoundException, RecentPasswordException {
-		User user = getUserById(changePasswordForm.getId());
-		if (!passwordEncoder.matches(changePasswordForm.getCurrentPassword(), user.getPassword())) {
-			throw new BadCredentialsException("Current password is wrong");
-		}
-		
-		List<UserPassword> recentPasswords = userPasswordRepository.getRecentPasswords(changePasswordForm.getId(), 3);
-		for (UserPassword recentPassword : recentPasswords) {
-			if (passwordEncoder.matches(changePasswordForm.getNewPassword(), recentPassword.getPassword())) {
-				throw new RecentPasswordException("Please use a new password, should not be recently used");
-			}
-		}
-		user.setPassword(passwordEncoder.encode(changePasswordForm.getNewPassword()));
-		userRepository.save(user);
-	}
-
-	@Override
-	public void sendResetPasswordEmail(String emailId) throws EntityNotFoundException {
-		User user = findByEmail(emailId);
-		Map<String, Object> data = new HashMap<>();
-		Map<Integer, Date> otpMap = otpUtil.getOTP(emailId);
-		Entry<Integer, Date> entry = otpMap.entrySet().iterator().next();
-		data.put("otp", entry.getKey());
-		data.put("validUpto", entry.getValue());
-		data.put("name", user.getName());
-		emailService.createAndSendEmail(user, data, EmailType.RESET_PASSWORD);
-	}
-
-	@Override
-	public void sendVerificationEmail(User user) {
+	public void sendVerificationEmail(User user, boolean isNewUser) {
 		String emailVerificationToken = commonUtil.getRandomAlphaNumericToken();
 		user.setEmailVerificationToken(passwordEncoder.encode(emailVerificationToken));
 		user.setEmailVerified(Boolean.FALSE);
@@ -253,6 +217,7 @@ public class UserServiceImpl implements UserService {
 		data.put("id", user.getId());
 		data.put("name", user.getName());
 		data.put("token", emailVerificationToken);
+		data.put("isNewUser", isNewUser);
 		
 		String url = commonUtil.getServerUrl() + RestUrlConstants.VERIFY_EMAIL_URL;
 		data.put("url", url);
@@ -272,5 +237,60 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 		return Boolean.TRUE;
 	}
+
+	@Override
+	public void inactivateUser(Integer userId) throws EntityNotFoundException {
+		User user = getUserById(userId);
+		user.setStatus(Status.INACTIVE);
+		// Append |userId to user name so that its available for new user 
+		user.setUsername(user.getUsername() + Constants.PIPE + userId);
+		userRepository.save(user);
+	}
+
+	@Override
+	public void changePassword(ChangePasswordForm changePasswordForm)
+			throws EntityNotFoundException, RecentPasswordException {
+		User user = getUserById(changePasswordForm.getId());
+		if (!passwordEncoder.matches(changePasswordForm.getCurrentPassword(), user.getPassword())) {
+			throw new BadCredentialsException("Current password is wrong");
+		}
+
+		updatePassword(changePasswordForm.getNewPassword(), user);
+	}
+
+	@Override
+	public void sendResetPasswordEmail(String emailId) throws EntityNotFoundException {
+		User user = findByEmail(emailId);
+		Map<String, Object> data = new HashMap<>();
+		Map<Integer, Date> otpMap = otpUtil.getOTP(emailId);
+		Entry<Integer, Date> entry = otpMap.entrySet().iterator().next();
+		data.put("otp", entry.getKey());
+		data.put("validUpto", entry.getValue());
+		data.put("name", user.getName());
+		emailService.createAndSendEmail(user, data, EmailType.RESET_PASSWORD);
+	}
+
+	@Override
+	public boolean validateOTP(OTPForm otpForm) {
+		return otpUtil.validateOTP(otpForm.getEmail(), otpForm.getOtp());
+	}
+
+	@Override
+	public void resetPassword(ResetPasswordForm resetPasswordForm)
+			throws EntityNotFoundException, RecentPasswordException {
+		User user = findByEmail(resetPasswordForm.getEmail());
+		updatePassword(resetPasswordForm.getPassword(), user);
+	}
 	
+	private void updatePassword(String password, User user) throws RecentPasswordException {
+		List<UserPassword> recentPasswords = userPasswordRepository.getRecentPasswords(user.getId(), 3);
+		for (UserPassword recentPassword : recentPasswords) {
+			if (passwordEncoder.matches(password, recentPassword.getPassword())) {
+				throw new RecentPasswordException("Please use a new password, should not be recently used");
+			}
+		}
+		user.setPassword(passwordEncoder.encode(password));
+		userRepository.save(user);		
+	}
+
 }

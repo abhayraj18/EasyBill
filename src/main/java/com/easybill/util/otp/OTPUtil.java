@@ -29,7 +29,7 @@ public class OTPUtil {
 	 * @param otpNumber
 	 * @return true if OTP is valid, else false
 	 */
-	public Boolean validateOTP(String key, Integer otpNumber) {
+	public boolean validateOTP(String key, Integer otpNumber) {
 		Integer cacheOTP = otpGenerator.getOTPByKey(key);
 		if (cacheOTP.equals(otpNumber)) {
 			otpGenerator.clearOTPFromCache(key);

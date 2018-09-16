@@ -7,7 +7,9 @@ import com.easybill.exception.ValidationException;
 import com.easybill.model.User;
 import com.easybill.pojo.ChangePasswordForm;
 import com.easybill.pojo.EditUserForm;
+import com.easybill.pojo.ResetPasswordForm;
 import com.easybill.pojo.UserVO;
+import com.easybill.pojo.OTPForm;
 
 public interface UserService {
 
@@ -54,6 +56,16 @@ public interface UserService {
 	 * @throws EntityExistsException
 	 */
 	Boolean isEmailAvailable(String email) throws EntityExistsException;
+	
+	/**
+	 * Service to check if user exists with an email.
+	 *  
+	 * @param email
+	 * @return
+	 * @throws EntityNotFoundException
+	 */
+	Boolean doesUserExistWithEmail(String email) throws EntityNotFoundException;
+
 
 	/**
 	 * Service to get user by id.
@@ -72,6 +84,25 @@ public interface UserService {
 	 * @throws EntityExistsException
 	 */
 	void editUser(EditUserForm userForm) throws EntityNotFoundException, EntityExistsException;
+	
+	/**
+	 * Service to send verification email to verify email id.
+	 * 
+	 * @param user
+	 * @param isNewUser
+	 */
+	void sendVerificationEmail(User user, boolean isNewUser);
+
+	/**
+	 * Service to verify the email using the link sent in verification email.
+	 * 
+	 * @param userId
+	 * @param token
+	 * @return
+	 * @throws NumberFormatException
+	 * @throws EntityNotFoundException
+	 */
+	Boolean verifyEmail(String userId, String token) throws NumberFormatException, EntityNotFoundException;
 
 	/**
 	 * Service to in-activate the user.
@@ -91,15 +122,6 @@ public interface UserService {
 	void changePassword(ChangePasswordForm changePasswordForm) throws EntityNotFoundException, RecentPasswordException;
 
 	/**
-	 * Service to check if user exists with an email.
-	 *  
-	 * @param email
-	 * @return
-	 * @throws EntityNotFoundException
-	 */
-	Boolean doesUserExistWithEmail(String email) throws EntityNotFoundException;
-
-	/**
 	 * Service to send reset password email.
 	 * 
 	 * @param emailId
@@ -108,21 +130,20 @@ public interface UserService {
 	void sendResetPasswordEmail(String emailId) throws EntityNotFoundException;
 
 	/**
-	 * Service to send verification email to verify email id.
+	 * Service to validate OTP.
 	 * 
-	 * @param user
+	 * @param otpForm
+	 * @return
 	 */
-	void sendVerificationEmail(User user);
+	boolean validateOTP(OTPForm otpForm);
 
 	/**
-	 * Service to verify the email using the link sent in verification email.
+	 * Service to reset password using email.
 	 * 
-	 * @param userId
-	 * @param token
-	 * @return
-	 * @throws NumberFormatException
-	 * @throws EntityNotFoundException
+	 * @param resetPasswordForm
+	 * @throws EntityNotFoundException 
+	 * @throws RecentPasswordException 
 	 */
-	Boolean verifyEmail(String userId, String token) throws NumberFormatException, EntityNotFoundException;
+	void resetPassword(ResetPasswordForm resetPasswordForm) throws EntityNotFoundException, RecentPasswordException;
 
 }

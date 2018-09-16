@@ -1,3 +1,3 @@
 # To build, run mvn clean install -DskipTests
 # To generate ddl, append exec:java -DmainClass=com.easybill.config.db.GenerateDDL to maven goal.
-# To install lombok, download lombok jar and install it to Eclipse location by double clicking it and restart Eclipse.
+# To install lombok, download lombok jar and install it to IDE location by double clicking on it.Then, restart IDE.

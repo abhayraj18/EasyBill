@@ -1,8 +1,5 @@
 package com.easybill.controller;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,6 @@ import com.easybill.exception.EntityNotFoundException;
 import com.easybill.exception.ValidationException;
 import com.easybill.pojo.PaymentForm;
 import com.easybill.service.PaymentService;
-import com.easybill.util.CommonUtil;
 import com.easybill.util.Constants;
 import com.easybill.util.ResponseUtil;
 import com.easybill.validation.ValidationUtil;
@@ -40,10 +36,7 @@ public class PaymentController {
 	public ResponseEntity<String> addPayment(@CurrentUser UserPrincipal currentUser,
 			@RequestBody @Validated PaymentForm paymentForm, Errors result)
 			throws ValidationException, EntityExistsException, EntityNotFoundException {
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		paymentService.addPayment(currentUser.getId(), paymentForm);
 		return ResponseUtil.buildSuccessResponseEntity("Payment added successfully");
 	}

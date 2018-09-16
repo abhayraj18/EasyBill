@@ -1,8 +1,5 @@
 package com.easybill.controller;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +38,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, Errors result)
 			throws AuthenticationException, ValidationException {
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 

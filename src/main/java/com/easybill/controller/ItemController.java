@@ -1,8 +1,5 @@
 package com.easybill.controller;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +43,7 @@ public class ItemController {
 			Errors result) throws EntityNotFoundException, ValidationException, EntityExistsException {
 		// Do custom validations
 		validator.validate(itemVO, result);
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		itemService.addItem(currentUser.getId(), itemVO);
 		return ResponseUtil.buildSuccessResponseEntity("Item added successfully");
 	}
@@ -63,10 +57,7 @@ public class ItemController {
 			result.reject(ValidationCode.INVALID_ID);
 		}
 		validator.validate(itemVO, result);
-		if (result.hasErrors()) {
-			Map<String, List<String>> errorMap = ValidationUtil.getErrorMessages(result);
-			throw new ValidationException(CommonUtil.convertToJSONString(errorMap));
-		}
+		ValidationUtil.checkValidationErrors(result);
 		itemService.editItem(currentUser.getId(), itemVO);
 		return ResponseUtil.buildSuccessResponseEntity("Item added successfully");
 	}
