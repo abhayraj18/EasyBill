@@ -1,1 +1,0 @@
-alter table BILL_INFORMATION add constraint FK_BILL_INFORMATION_ID foreign key (ID) references ORDER_INFO (ID) on delete cascade;

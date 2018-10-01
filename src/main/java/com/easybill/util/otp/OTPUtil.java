@@ -23,7 +23,7 @@ public class OTPUtil {
 	}
 
 	/**
-	 * Method to validated passed OTP using key
+	 * Method to validate OTP
 	 * 
 	 * @param key
 	 * @param otpNumber

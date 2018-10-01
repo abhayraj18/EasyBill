@@ -26,7 +26,7 @@ public class GenerateDDL {
 	private final String PACKAGES_TO_SCAN = "com.easybill.model";
 	private final String NAMING_STRATEGY = "com.easybill.config.db.PhysicalNamingStrategyStandardImpl";
 	private final String DIALECT = "org.hibernate.dialect.MySQL5InnoDBDialect";
-	private final static String SCHEMA_FILE = "db/ddl.sql";
+	private final static String SCHEMA_FILE = "ddl.sql";
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
